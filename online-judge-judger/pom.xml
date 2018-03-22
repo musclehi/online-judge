@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>online-judge-judger</artifactId>
     <packaging>war</packaging>
-    <name>online-judge-judger Maven Webapp</name>
+    <name>online-judge-judger</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

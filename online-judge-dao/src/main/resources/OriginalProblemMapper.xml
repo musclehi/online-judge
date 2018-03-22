@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.OriginalProblemDao">
+    <!-- OriginalProblem的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_OriginalProblem_Map" type="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="output" jdbcType="VARCHAR" property="output" />
+        <result column="input" jdbcType="VARCHAR" property="input" />
+        <result column="extension" jdbcType="VARCHAR" property="extension" />
+        <result column="sample_input" jdbcType="VARCHAR" property="sampleInput" />
+        <result column="time_limit" jdbcType="INTEGER" property="timeLimit" />
+        <result column="sample_output" jdbcType="VARCHAR" property="sampleOutput" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="memory_limit" jdbcType="INTEGER" property="memoryLimit" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+    </resultMap>
+
+    <!-- 数据库中表名为:original_problem的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="original_problem_Column">
+        original_problem.id as id
+        ,original_problem.output as output
+        ,original_problem.input as input
+        ,original_problem.extension as extension
+        ,original_problem.sample_input as sample_input
+        ,original_problem.time_limit as time_limit
+        ,original_problem.sample_output as sample_output
+        ,original_problem.description as description
+        ,original_problem.memory_limit as memory_limit
+        ,original_problem.title as title
+    </sql>
+
+    <!--获得类名为:OriginalProblem对应的数据库表的数据总行数 -->
+    <select id="getOriginalProblemRowCount" resultType="java.lang.Long">
+        select count(id) from original_problem
+    </select>
+    <!-- 获得类名为:OriginalProblem对应数据库中表的数据集合 -->
+    <select id="selectOriginalProblem" resultMap="result_OriginalProblem_Map">
+        select 
+        <include refid="original_problem_Column" /> 
+        from original_problem
+    </select> 
+
+    <!-- 获得一个OriginalProblem对象,以参数OriginalProblem对象中不为空的属性作为条件进行查询-->
+    <select id="selectOriginalProblemByObj" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem" resultMap="result_OriginalProblem_Map">
+        select 
+            <include refid="original_problem_Column" /> 
+        from original_problem
+        <where>
+            <if test="title != null "> and original_problem.title = #{title,jdbcType=VARCHAR}</if>
+            <if test="memoryLimit != null "> and original_problem.memory_limit = #{memoryLimit,jdbcType=INTEGER}</if>
+            <if test="description != null "> and original_problem.description = #{description,jdbcType=VARCHAR}</if>
+            <if test="sampleOutput != null "> and original_problem.sample_output = #{sampleOutput,jdbcType=VARCHAR}</if>
+            <if test="timeLimit != null "> and original_problem.time_limit = #{timeLimit,jdbcType=INTEGER}</if>
+            <if test="sampleInput != null "> and original_problem.sample_input = #{sampleInput,jdbcType=VARCHAR}</if>
+            <if test="extension != null "> and original_problem.extension = #{extension,jdbcType=VARCHAR}</if>
+            <if test="input != null "> and original_problem.input = #{input,jdbcType=VARCHAR}</if>
+            <if test="output != null "> and original_problem.output = #{output,jdbcType=VARCHAR}</if>
+            <if test="id != null "> and original_problem.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select> 
+
+    <!-- 通过OriginalProblem的id获得对应数据库中表的数据对象-->
+    <select id="selectOriginalProblemById" parameterType="java.lang.Integer" resultMap="result_OriginalProblem_Map">
+        select 
+            <include refid="original_problem_Column" /> 
+        from original_problem
+        where original_problem.id = #{id,jdbcType=INTEGER}
+    </select> 
+
+    <!-- 将OriginalProblem插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertOriginalProblem" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
+        insert into original_problem(id,output,input,extension,sample_input,time_limit,sample_output,description,memory_limit,title) 
+        values(#{id,jdbcType=INTEGER},#{output,jdbcType=VARCHAR},#{input,jdbcType=VARCHAR},#{extension,jdbcType=VARCHAR},#{sampleInput,jdbcType=VARCHAR},#{timeLimit,jdbcType=INTEGER},#{sampleOutput,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 将OriginalProblem中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyOriginalProblem" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
+        insert into original_problem
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="output != null">output,</if>
+            <if test="input != null">input,</if>
+            <if test="extension != null">extension,</if>
+            <if test="sampleInput != null">sample_input,</if>
+            <if test="timeLimit != null">time_limit,</if>
+            <if test="sampleOutput != null">sample_output,</if>
+            <if test="description != null">description,</if>
+            <if test="memoryLimit != null">memory_limit,</if>
+            <if test="title != null">title,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            <if test="output != null"> #{output,jdbcType=VARCHAR},</if>
+            <if test="input != null"> #{input,jdbcType=VARCHAR},</if>
+            <if test="extension != null"> #{extension,jdbcType=VARCHAR},</if>
+            <if test="sampleInput != null"> #{sampleInput,jdbcType=VARCHAR},</if>
+            <if test="timeLimit != null"> #{timeLimit,jdbcType=INTEGER},</if>
+            <if test="sampleOutput != null"> #{sampleOutput,jdbcType=VARCHAR},</if>
+            <if test="description != null"> #{description,jdbcType=VARCHAR},</if>
+            <if test="memoryLimit != null"> #{memoryLimit,jdbcType=INTEGER},</if>
+            <if test="title != null"> #{title,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+
+    <!-- 将OriginalProblem批量插入到对应数据库的表中-->
+    <insert id="insertOriginalProblemByBatch" parameterType="ArrayList">
+        insert into original_problem(id,output,input,extension,sample_input,time_limit,sample_output,description,memory_limit,title) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=INTEGER},#{item.output,jdbcType=VARCHAR},#{item.input,jdbcType=VARCHAR},#{item.extension,jdbcType=VARCHAR},#{item.sampleInput,jdbcType=VARCHAR},#{item.timeLimit,jdbcType=INTEGER},#{item.sampleOutput,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 通过OriginalProblem的id将数据库表中对应的数据删除-->
+    <delete id="deleteOriginalProblemById" parameterType="java.lang.Integer">
+        delete from original_problem
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过OriginalProblem的id将OriginalProblem的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateOriginalProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
+        update original_problem set
+            output=#{output,jdbcType=VARCHAR}
+            ,input=#{input,jdbcType=VARCHAR}
+            ,extension=#{extension,jdbcType=VARCHAR}
+            ,sample_input=#{sampleInput,jdbcType=VARCHAR}
+            ,time_limit=#{timeLimit,jdbcType=INTEGER}
+            ,sample_output=#{sampleOutput,jdbcType=VARCHAR}
+            ,description=#{description,jdbcType=VARCHAR}
+            ,memory_limit=#{memoryLimit,jdbcType=INTEGER}
+            ,title=#{title,jdbcType=VARCHAR}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过OriginalProblem的id将OriginalProblem中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyOriginalProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
+        update original_problem
+        <set>
+            <if test="output != null">
+                output=#{output,jdbcType=VARCHAR},
+            </if>
+            <if test="input != null">
+                input=#{input,jdbcType=VARCHAR},
+            </if>
+            <if test="extension != null">
+                extension=#{extension,jdbcType=VARCHAR},
+            </if>
+            <if test="sampleInput != null">
+                sample_input=#{sampleInput,jdbcType=VARCHAR},
+            </if>
+            <if test="timeLimit != null">
+                time_limit=#{timeLimit,jdbcType=INTEGER},
+            </if>
+            <if test="sampleOutput != null">
+                sample_output=#{sampleOutput,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description=#{description,jdbcType=VARCHAR},
+            </if>
+            <if test="memoryLimit != null">
+                memory_limit=#{memoryLimit,jdbcType=INTEGER},
+            </if>
+            <if test="title != null">
+                title=#{title,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+</mapper>

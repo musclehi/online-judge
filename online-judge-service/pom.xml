@@ -9,7 +9,12 @@
     <artifactId>online-judge-service</artifactId>
 
     <dependencies>
-
+        <!-- 依赖dao模块 -->
+        <dependency>
+            <groupId>cn.idealism-xxm</groupId>
+            <artifactId>online-judge-dao</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>online-judge-service</finalName>

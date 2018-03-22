@@ -12,7 +12,7 @@
         <module>online-judge-domain</module>
         <module>online-judge-judger</module>
     </modules>
-    <name>online-judge Maven Webapp</name>
+    <name>online-judge</name>
     <url>http://maven.apache.org</url>
     <properties>
         <junit.version>4.12</junit.version>
