@@ -1,5 +1,7 @@
 package cn.idealismxxm.onlinejudge.util;
 
+import cn.idealismxxm.onlinejudge.enums.ResultCodeEnum;
+
 import java.io.Serializable;
 
 /**
@@ -23,6 +25,12 @@ public class AjaxResult<T> implements Serializable {
      * 封装的数据
      */
     private T data;
+
+    public AjaxResult(ResultCodeEnum resultCodeEnum, T data) {
+        this.code = resultCodeEnum.getCode();
+        this.msg = resultCodeEnum.getMsg();
+        this.data = data;
+    }
 
     public AjaxResult(String code, String msg, T data) {
         this.code = code;

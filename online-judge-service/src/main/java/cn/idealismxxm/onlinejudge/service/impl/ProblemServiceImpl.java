@@ -5,12 +5,13 @@ import java.util.List;
 import cn.idealismxxm.onlinejudge.dao.ProblemDao;
 import cn.idealismxxm.onlinejudge.entity.Problem;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 @Service
 public class ProblemServiceImpl implements ProblemService {
-    @Autowired
+    @Resource
     private ProblemDao problemDao;
 
     @Override
