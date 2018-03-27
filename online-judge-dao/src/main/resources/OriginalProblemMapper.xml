@@ -69,7 +69,7 @@
 
     <!-- 将OriginalProblem插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertOriginalProblem" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
+    <insert id="insertOriginalProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.entity.OriginalProblem">
         insert into original_problem(id,output,input,extension,sample_input,time_limit,sample_output,description,memory_limit,title) 
         values(#{id,jdbcType=INTEGER},#{output,jdbcType=VARCHAR},#{input,jdbcType=VARCHAR},#{extension,jdbcType=VARCHAR},#{sampleInput,jdbcType=VARCHAR},#{timeLimit,jdbcType=INTEGER},#{sampleOutput,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR})
     </insert>

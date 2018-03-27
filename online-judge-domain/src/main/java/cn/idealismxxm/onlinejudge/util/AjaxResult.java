@@ -1,7 +1,5 @@
 package cn.idealismxxm.onlinejudge.util;
 
-import cn.idealismxxm.onlinejudge.enums.ResultCodeEnum;
-
 import java.io.Serializable;
 
 /**
@@ -12,11 +10,6 @@ import java.io.Serializable;
  */
 public class AjaxResult<T> implements Serializable {
     /**
-     * 相关代码
-     */
-    private String code;
-
-    /**
      * 相关信息
      */
     private String msg;
@@ -26,24 +19,13 @@ public class AjaxResult<T> implements Serializable {
      */
     private T data;
 
-    public AjaxResult(ResultCodeEnum resultCodeEnum, T data) {
-        this.code = resultCodeEnum.getCode();
-        this.msg = resultCodeEnum.getMsg();
-        this.data = data;
+    public AjaxResult(String msg) {
+        this.msg = msg;
     }
 
-    public AjaxResult(String code, String msg, T data) {
-        this.code = code;
+    public AjaxResult(String msg, T data) {
         this.msg = msg;
         this.data = data;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getMsg() {
@@ -65,7 +47,6 @@ public class AjaxResult<T> implements Serializable {
     @Override
     public String toString() {
         return "AjaxResult{" +
-                "code=" + code +
                 ", msg='" + msg + '\'' +
                 ", data=" + data +
                 '}';

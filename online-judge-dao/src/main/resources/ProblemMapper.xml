@@ -66,9 +66,9 @@
 
     <!-- 将Problem插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertProblem" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
+    <insert id="insertProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
         insert into problem(id,updated_time,time_limit,public_status,memory_limit,title,original_oj,original_id,url) 
-        values(#{id,jdbcType=INTEGER},#{updatedTime,jdbcType=DATE},#{timeLimit,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
+        values(#{id,jdbcType=INTEGER},now(),#{timeLimit,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将Problem中属性值不为null的数据,插入到对应数据库的表中-->
@@ -130,9 +130,7 @@
     <update id="updateNonEmptyProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
         update problem
         <set>
-            <if test="updatedTime != null">
-                updated_time=#{updatedTime,jdbcType=DATE},
-            </if>
+            updated_time=#{now(),jdbcType=DATE},
             <if test="timeLimit != null">
                 time_limit=#{timeLimit,jdbcType=INTEGER},
             </if>

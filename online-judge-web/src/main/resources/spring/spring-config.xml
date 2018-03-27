@@ -11,4 +11,5 @@
     <!-- 注解扫描 -->
     <context:component-scan base-package="cn.idealismxxm.onlinejudge" />
 
+    <import resource="spring-config-mybatis.xml" />
 </beans>

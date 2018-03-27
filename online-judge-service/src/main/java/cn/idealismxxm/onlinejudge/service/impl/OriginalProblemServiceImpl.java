@@ -1,74 +1,70 @@
 package cn.idealismxxm.onlinejudge.service.impl;
 
 import cn.idealismxxm.onlinejudge.dao.OriginalProblemDao;
+import cn.idealismxxm.onlinejudge.dao.ProblemDao;
 import cn.idealismxxm.onlinejudge.entity.OriginalProblem;
+import cn.idealismxxm.onlinejudge.entity.Problem;
+import cn.idealismxxm.onlinejudge.enums.OnlineJudgeEnum;
+import cn.idealismxxm.onlinejudge.enums.PublicStatusEnum;
 import cn.idealismxxm.onlinejudge.service.OriginalProblemService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
-@Service
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
+@Service("originalProblemService")
 public class OriginalProblemServiceImpl implements OriginalProblemService {
+
     @Resource
     private OriginalProblemDao originalProblemDao;
 
-    @Override
-    public long getOriginalProblemRowCount() {
-        return originalProblemDao.getOriginalProblemRowCount();
-    }
+    @Resource
+    private ProblemDao problemDao;
+
 
     @Override
-    public List<OriginalProblem> selectOriginalProblem() {
-        return originalProblemDao.selectOriginalProblem();
-    }
+    @Transactional(isolation = READ_COMMITTED)
+    public Integer addOriginalProblem(OriginalProblem originalProblem) {
+        // 1. 插入原创题目，并得到其id
+        originalProblemDao.insertOriginalProblem(originalProblem);
+        Integer originalProblemId = originalProblem.getId();
 
-    @Override
-    public OriginalProblem selectOriginalProblemByObj(OriginalProblem obj) {
-        return originalProblemDao.selectOriginalProblemByObj(obj);
-    }
+        // 2. 初始化题目对象，并插入数据库
+        Problem problem = this.initProblem(originalProblem);
+        problem.setPublicStatus(PublicStatusEnum.PRIVATE.getCode());
+        problemDao.insertProblem(problem);
 
-    @Override
-    public OriginalProblem selectOriginalProblemById(Integer id) {
-        return originalProblemDao.selectOriginalProblemById(id);
-    }
-
-    @Override
-    public int insertOriginalProblem(OriginalProblem value) {
-        return originalProblemDao.insertOriginalProblem(value);
+        return originalProblem.getId();
     }
 
     @Override
-    public int insertNonEmptyOriginalProblem(OriginalProblem value) {
-        return originalProblemDao.insertNonEmptyOriginalProblem(value);
+    @Transactional(isolation = READ_COMMITTED)
+    public Boolean editOriginalProblemById(OriginalProblem originalProblem) {
+        // 1. 更新原创题目
+        originalProblemDao.updateOriginalProblemById(originalProblem);
+
+        // 2. 初始化题目对象，并更新数据库
+        Problem problem = this.initProblem(originalProblem);
+        problemDao.updateNonEmptyProblemById(problem);
+
+        return true;
     }
 
-    @Override
-    public int insertOriginalProblemByBatch(List<OriginalProblem> value) {
-        return originalProblemDao.insertOriginalProblemByBatch(value);
-    }
+    /**
+     * 根据原创题目初始化题目对象
+     *
+     * @param originalProblem 原创题目
+     * @return 题目对象
+     */
+    private Problem initProblem(OriginalProblem originalProblem) {
+        Problem problem = new Problem();
+        problem.setOriginalOj(OnlineJudgeEnum.ORIGINAL.getCode());
+        problem.setTitle(originalProblem.getTitle());
+        problem.setTimeLimit(originalProblem.getTimeLimit());
+        problem.setMemoryLimit(originalProblem.getMemoryLimit());
 
-    @Override
-    public int deleteOriginalProblemById(Integer id) {
-        return originalProblemDao.deleteOriginalProblemById(id);
+        return problem;
     }
-
-    @Override
-    public int updateOriginalProblemById(OriginalProblem enti) {
-        return originalProblemDao.updateOriginalProblemById(enti);
-    }
-
-    @Override
-    public int updateNonEmptyOriginalProblemById(OriginalProblem enti) {
-        return originalProblemDao.updateNonEmptyOriginalProblemById(enti);
-    }
-
-    public OriginalProblemDao getOriginalProblemDao() {
-        return this.originalProblemDao;
-    }
-
-    public void setOriginalProblemDao(OriginalProblemDao originalProblemDao) {
-        this.originalProblemDao = originalProblemDao;
-    }
-
 }

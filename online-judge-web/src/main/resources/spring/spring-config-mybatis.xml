@@ -12,12 +12,9 @@
 
     <!-- 开启注解 -->
     <context:annotation-config />
-    <!-- 自动扫描 Service dao等jar包 -->
-    <context:component-scan base-package="cn.idealismxxm.onlinejudge">
-        <!-- 过滤 Controller 注解，此为 Spring MVC 配置-->
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
-    </context:component-scan>
+    <!-- 自动扫描 -->
+    <context:component-scan base-package="cn.idealismxxm.onlinejudge" />
+
     <context:property-placeholder location="classpath:jdbc.properties" />
     <!-- 数据库连接池 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
@@ -29,13 +26,18 @@
         <property name="maxActive" value="10" />
         <property name="minIdle" value="5" />
     </bean>
+
     <!-- 让spring管理 sqlSessionFactory 使用mybatis和spring整合包中的 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 数据库连接池 -->
         <property name="dataSource" ref="dataSource" />
+        <!-- 自动扫描 Mapper.xml 文件-->
+        <property name="mapperLocations" value="classpath:*Mapper.xml" />
     </bean>
+    <!-- 扫描 dao层 接口 -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="classpath:*" />
+        <property name="basePackage" value="cn.idealismxxm.onlinejudge.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 
     <!-- 事务管理器-->
