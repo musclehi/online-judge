@@ -7,9 +7,10 @@ package cn.idealismxxm.onlinejudge.enums;
  * @date 2018/3/27
  */
 public enum OnlineJudgeEnum {
-    ORIGINAL(1, "本平台"),
-    HDU(2, "HDU"),
-    POJ(3, "POJ"),;
+    ORIGINAL(1, "本平台", "%s"),
+    HDU(2, "HDU", "http://acm.hdu.edu.cn/showproblem.php?pid=%s"),
+    POJ(3, "POJ", "http://poj.org/problem?id=%s"),;
+
     /**
      * OJ 代码
      */
@@ -20,9 +21,15 @@ public enum OnlineJudgeEnum {
      */
     private String name;
 
-    OnlineJudgeEnum(Integer code, String name) {
+    /**
+     * OJ 题目 url 形式：http://acm.hdu.edu.cn/showproblem.php?pid=%s （%s代表题号）
+     */
+    private String urlFormat;
+
+    OnlineJudgeEnum(Integer code, String name, String urlFormat) {
         this.code = code;
         this.name = name;
+        this.urlFormat = urlFormat;
     }
 
     public Integer getCode() {
@@ -31,5 +38,9 @@ public enum OnlineJudgeEnum {
 
     public String getName() {
         return name;
+    }
+
+    public String getUrl(String problemId) {
+        return String.format(urlFormat, problemId);
     }
 }

@@ -49,15 +49,17 @@ public class OriginalProblemControllerTest {
     public void addTest() {
         OriginalProblem originalProblem = initOriginalProblem();
         try {
-            String requestBody = String.format("{\"originalProblemJson\": \"%s\"}", JsonUtil.ObjectToJson(originalProblem));
-            String responseString = mockMvc.perform(post("/originalProblem/add")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(requestBody)
+
+            String originalProblemJson = JsonUtil.ObjectToJson(originalProblem);
+            String requestBody = String.format("{\"originalProblemJson\":\"%s\"}", originalProblemJson);
+            MvcResult responseString = mockMvc.perform(post("/originalProblem/add")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .accept(MediaType.APPLICATION_JSON)
-                    .header("X-Requested-With", "XMLHttpRequest")
+                    //.content(requestBody)
+                    .param("originalProblemJson", originalProblemJson)
                     ).andExpect(status().isOk())
                     .andDo(MockMvcResultHandlers.print())
-                    .andReturn().getResponse().getContentAsString();
+                    .andReturn();
             System.out.println(responseString);
         } catch (Exception e) {
             e.printStackTrace();

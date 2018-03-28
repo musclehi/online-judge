@@ -47,8 +47,8 @@ public class AjaxResult<T> implements Serializable {
     @Override
     public String toString() {
         return "AjaxResult{" +
-                ", msg='" + msg + '\'' +
-                ", data=" + data +
+                "msg='" + msg + '\'' +
+                ", data=" + JsonUtil.ObjectToJson(data) +
                 '}';
     }
 }

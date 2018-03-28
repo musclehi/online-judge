@@ -9,7 +9,10 @@
     <context:component-scan base-package="cn.idealismxxm.onlinejudge" />
 
     <!-- 启用 Spring MVC 注解 -->
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven />
+
+    <!-- 静态文件访问 -->
+    <mvc:default-servlet-handler/>
 
     <!-- 配置视图解析类 -->
     <bean id="httlViewResolver" class="httl.web.springmvc.HttlViewResolver">

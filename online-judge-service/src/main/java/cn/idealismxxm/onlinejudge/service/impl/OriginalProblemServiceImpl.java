@@ -34,6 +34,9 @@ public class OriginalProblemServiceImpl implements OriginalProblemService {
         // 2. 初始化题目对象，并插入数据库
         Problem problem = this.initProblem(originalProblem);
         problem.setPublicStatus(PublicStatusEnum.PRIVATE.getCode());
+        problem.setOriginalId(originalProblemId.toString());
+        problem.setUrl(OnlineJudgeEnum.ORIGINAL.getUrl(originalProblemId.toString()));
+
         problemDao.insertProblem(problem);
 
         return originalProblem.getId();

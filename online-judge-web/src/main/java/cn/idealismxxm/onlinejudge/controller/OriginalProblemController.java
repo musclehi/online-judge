@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 原创题目相关操作
@@ -33,7 +34,7 @@ public class OriginalProblemController {
      */
     @ResponseBody
     @RequestMapping(value = "add", method = {RequestMethod.POST})
-    public AjaxResult<Integer> add(HttpServletRequest request, String originalProblemJson) {
+    public AjaxResult<Integer> add(String originalProblemJson) {
         OriginalProblem originalProblem = JsonUtil.jsonToObject(originalProblemJson, OriginalProblem.class);
         Integer id = originalProblemService.addOriginalProblem(originalProblem);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getErrorCode(), id);
