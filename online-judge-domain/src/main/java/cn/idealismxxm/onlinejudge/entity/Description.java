@@ -1,36 +1,26 @@
 package cn.idealismxxm.onlinejudge.entity;
-
-public class OriginalProblem implements java.io.Serializable {
+public class Description implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
-    private Integer id;//题号
+    private Integer id;//主键
     private String output;//题目输出描述
     private String input;//题目输入描述
     private String extension;//扩充字段（Json串）
     private String sampleInput;//题目输入样例
-    private Integer timeLimit;//题目时间限制（单位：ms）
     private String sampleOutput;//题目输出样例
     private String description;//题目描述
-    private Integer memoryLimit;//题目空间限制（单位：KB）
-    private String title;//题目标题
-
-    public OriginalProblem() {
+    public Description() {
         super();
     }
-
-    public OriginalProblem(Integer id, String output, String input, String extension, String sampleInput, Integer timeLimit, String sampleOutput, String description, Integer memoryLimit, String title) {
+    public Description(Integer id,String output,String input,String extension,String sampleInput,String sampleOutput,String description) {
         super();
         this.id = id;
         this.output = output;
         this.input = input;
         this.extension = extension;
         this.sampleInput = sampleInput;
-        this.timeLimit = timeLimit;
         this.sampleOutput = sampleOutput;
         this.description = description;
-        this.memoryLimit = memoryLimit;
-        this.title = title;
     }
-
     public Integer getId() {
         return this.id;
     }
@@ -71,14 +61,6 @@ public class OriginalProblem implements java.io.Serializable {
         this.sampleInput = sampleInput;
     }
 
-    public Integer getTimeLimit() {
-        return this.timeLimit;
-    }
-
-    public void setTimeLimit(Integer timeLimit) {
-        this.timeLimit = timeLimit;
-    }
-
     public String getSampleOutput() {
         return this.sampleOutput;
     }
@@ -93,22 +75,6 @@ public class OriginalProblem implements java.io.Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Integer getMemoryLimit() {
-        return this.memoryLimit;
-    }
-
-    public void setMemoryLimit(Integer memoryLimit) {
-        this.memoryLimit = memoryLimit;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
 }

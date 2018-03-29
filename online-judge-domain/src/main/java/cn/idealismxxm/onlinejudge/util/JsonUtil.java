@@ -24,7 +24,7 @@ public class JsonUtil {
      * @param object 待序列化的对象
      * @return 序列化后的串
      */
-    public static String ObjectToJson(Object object) {
+    public static String objectToJson(Object object) {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {

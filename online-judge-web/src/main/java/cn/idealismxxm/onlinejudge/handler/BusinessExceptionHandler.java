@@ -46,7 +46,7 @@ public class BusinessExceptionHandler implements HandlerExceptionResolver {
             PrintWriter printWriter = null;
             try {
                 printWriter = response.getWriter();
-                printWriter.write(JsonUtil.ObjectToJson(result));
+                printWriter.write(JsonUtil.objectToJson(result));
                 printWriter.flush();
                 printWriter.close();
             } catch (Exception ex) {

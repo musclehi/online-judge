@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.DescriptionDao">
+    <!-- Description的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_Description_Map" type="cn.idealismxxm.onlinejudge.entity.Description">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="output" jdbcType="VARCHAR" property="output"/>
+        <result column="input" jdbcType="VARCHAR" property="input"/>
+        <result column="extension" jdbcType="VARCHAR" property="extension"/>
+        <result column="sample_input" jdbcType="VARCHAR" property="sampleInput"/>
+        <result column="sample_output" jdbcType="VARCHAR" property="sampleOutput"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+    </resultMap>
+
+    <!-- 数据库中表名为:description的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="description_Column">
+        description.id as id
+        ,description.output as output
+        ,description.input as input
+        ,description.extension as extension
+        ,description.sample_input as sample_input
+        ,description.sample_output as sample_output
+        ,description.description as description
+    </sql>
+
+    <!--获得类名为:Description对应的数据库表的数据总行数 -->
+    <select id="getDescriptionRowCount" resultType="java.lang.Long">
+        select count(id) from description
+    </select>
+    <!-- 获得类名为:Description对应数据库中表的数据集合 -->
+    <select id="selectDescription" resultMap="result_Description_Map">
+        select
+        <include refid="description_Column"/>
+        from description
+    </select>
+
+    <!-- 获得一个Description对象,以参数Description对象中不为空的属性作为条件进行查询-->
+    <select id="selectDescriptionByObj" parameterType="cn.idealismxxm.onlinejudge.entity.Description"
+            resultMap="result_Description_Map">
+        select
+        <include refid="description_Column"/>
+        from description
+        <where>
+            <if test="description != null ">and description.description = #{description,jdbcType=VARCHAR}</if>
+            <if test="sampleOutput != null ">and description.sample_output = #{sampleOutput,jdbcType=VARCHAR}</if>
+            <if test="sampleInput != null ">and description.sample_input = #{sampleInput,jdbcType=VARCHAR}</if>
+            <if test="extension != null ">and description.extension = #{extension,jdbcType=VARCHAR}</if>
+            <if test="input != null ">and description.input = #{input,jdbcType=VARCHAR}</if>
+            <if test="output != null ">and description.output = #{output,jdbcType=VARCHAR}</if>
+            <if test="id != null ">and description.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select>
+
+    <!-- 通过Description的id获得对应数据库中表的数据对象-->
+    <select id="selectDescriptionById" parameterType="java.lang.Integer" resultMap="result_Description_Map">
+        select
+        <include refid="description_Column"/>
+        from description
+        where description.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 将Description插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertDescription" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+        insert into description(id,output,input,extension,sample_input,sample_output,description) 
+        values(#{id,jdbcType=INTEGER},#{output,jdbcType=VARCHAR},#{input,jdbcType=VARCHAR},#{extension,jdbcType=VARCHAR},#{sampleInput,jdbcType=VARCHAR},#{sampleOutput,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 将Description中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyDescription" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+        insert into description
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="output != null">output,</if>
+            <if test="input != null">input,</if>
+            <if test="extension != null">extension,</if>
+            <if test="sampleInput != null">sample_input,</if>
+            <if test="sampleOutput != null">sample_output,</if>
+            <if test="description != null">description,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id,jdbcType=INTEGER},</if>
+            <if test="output != null">#{output,jdbcType=VARCHAR},</if>
+            <if test="input != null">#{input,jdbcType=VARCHAR},</if>
+            <if test="extension != null">#{extension,jdbcType=VARCHAR},</if>
+            <if test="sampleInput != null">#{sampleInput,jdbcType=VARCHAR},</if>
+            <if test="sampleOutput != null">#{sampleOutput,jdbcType=VARCHAR},</if>
+            <if test="description != null">#{description,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+
+    <!-- 将Description批量插入到对应数据库的表中-->
+    <insert id="insertDescriptionByBatch" parameterType="ArrayList">
+        insert into description(id,output,input,extension,sample_input,sample_output,description) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id,jdbcType=INTEGER},#{item.output,jdbcType=VARCHAR},#{item.input,jdbcType=VARCHAR},#{item.extension,jdbcType=VARCHAR},#{item.sampleInput,jdbcType=VARCHAR},#{item.sampleOutput,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 通过Description的id将数据库表中对应的数据删除-->
+    <delete id="deleteDescriptionById" parameterType="java.lang.Integer">
+        delete from description
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过Description的id将Description的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateDescriptionById" parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+        update description set
+            output=#{output,jdbcType=VARCHAR}
+            ,input=#{input,jdbcType=VARCHAR}
+            ,extension=#{extension,jdbcType=VARCHAR}
+            ,sample_input=#{sampleInput,jdbcType=VARCHAR}
+            ,sample_output=#{sampleOutput,jdbcType=VARCHAR}
+            ,description=#{description,jdbcType=VARCHAR}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过Description的id将Description中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyDescriptionById" parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+        update description
+        <set>
+            <if test="output != null">
+                output=#{output,jdbcType=VARCHAR},
+            </if>
+            <if test="input != null">
+                input=#{input,jdbcType=VARCHAR},
+            </if>
+            <if test="extension != null">
+                extension=#{extension,jdbcType=VARCHAR},
+            </if>
+            <if test="sampleInput != null">
+                sample_input=#{sampleInput,jdbcType=VARCHAR},
+            </if>
+            <if test="sampleOutput != null">
+                sample_output=#{sampleOutput,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description=#{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+</mapper>

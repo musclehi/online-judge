@@ -3,15 +3,17 @@
 <mapper namespace="cn.idealismxxm.onlinejudge.dao.ProblemDao">
     <!-- Problem的resultMap,column是给数据库列起的别名,它对应property类的属性-->
     <resultMap id="result_Problem_Map" type="cn.idealismxxm.onlinejudge.entity.Problem">
-        <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="updated_time" jdbcType="DATE" property="updatedTime" />
-        <result column="time_limit" jdbcType="INTEGER" property="timeLimit" />
-        <result column="public_status" jdbcType="TINYINT" property="publicStatus" />
-        <result column="memory_limit" jdbcType="INTEGER" property="memoryLimit" />
-        <result column="title" jdbcType="VARCHAR" property="title" />
-        <result column="original_oj" jdbcType="SMALLINT" property="originalOj" />
-        <result column="original_id" jdbcType="VARCHAR" property="originalId" />
-        <result column="url" jdbcType="VARCHAR" property="url" />
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="updated_time" jdbcType="DATE" property="updatedTime"/>
+        <result column="time_limit" jdbcType="INTEGER" property="timeLimit"/>
+        <result column="description_id" jdbcType="INTEGER" property="descriptionId"/>
+        <result column="public_status" jdbcType="TINYINT" property="publicStatus"/>
+        <result column="tag" jdbcType="VARCHAR" property="tag"/>
+        <result column="memory_limit" jdbcType="INTEGER" property="memoryLimit"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="original_oj" jdbcType="SMALLINT" property="originalOj"/>
+        <result column="original_id" jdbcType="VARCHAR" property="originalId"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
     <!-- 数据库中表名为:problem的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
@@ -19,7 +21,9 @@
         problem.id as id
         ,problem.updated_time as updated_time
         ,problem.time_limit as time_limit
+        ,problem.description_id as description_id
         ,problem.public_status as public_status
+        ,problem.tag as tag
         ,problem.memory_limit as memory_limit
         ,problem.title as title
         ,problem.original_oj as original_oj
@@ -33,52 +37,57 @@
     </select>
     <!-- 获得类名为:Problem对应数据库中表的数据集合 -->
     <select id="selectProblem" resultMap="result_Problem_Map">
-        select 
-        <include refid="problem_Column" /> 
+        select
+        <include refid="problem_Column"/>
         from problem
-    </select> 
+    </select>
 
     <!-- 获得一个Problem对象,以参数Problem对象中不为空的属性作为条件进行查询-->
-    <select id="selectProblemByObj" parameterType="cn.idealismxxm.onlinejudge.entity.Problem" resultMap="result_Problem_Map">
-        select 
-            <include refid="problem_Column" /> 
+    <select id="selectProblemByObj" parameterType="cn.idealismxxm.onlinejudge.entity.Problem"
+            resultMap="result_Problem_Map">
+        select
+        <include refid="problem_Column"/>
         from problem
         <where>
-            <if test="url != null "> and problem.url = #{url,jdbcType=VARCHAR}</if>
-            <if test="originalId != null "> and problem.original_id = #{originalId,jdbcType=VARCHAR}</if>
-            <if test="originalOj != null "> and problem.original_oj = #{originalOj,jdbcType=SMALLINT}</if>
-            <if test="title != null "> and problem.title = #{title,jdbcType=VARCHAR}</if>
-            <if test="memoryLimit != null "> and problem.memory_limit = #{memoryLimit,jdbcType=INTEGER}</if>
-            <if test="publicStatus != null "> and problem.public_status = #{publicStatus,jdbcType=TINYINT}</if>
-            <if test="timeLimit != null "> and problem.time_limit = #{timeLimit,jdbcType=INTEGER}</if>
-            <if test="updatedTime != null "> and problem.updated_time = #{updatedTime,jdbcType=DATE}</if>
-            <if test="id != null "> and problem.id = #{id,jdbcType=INTEGER}</if>
+            <if test="url != null ">and problem.url = #{url,jdbcType=VARCHAR}</if>
+            <if test="originalId != null ">and problem.original_id = #{originalId,jdbcType=VARCHAR}</if>
+            <if test="originalOj != null ">and problem.original_oj = #{originalOj,jdbcType=SMALLINT}</if>
+            <if test="title != null ">and problem.title = #{title,jdbcType=VARCHAR}</if>
+            <if test="memoryLimit != null ">and problem.memory_limit = #{memoryLimit,jdbcType=INTEGER}</if>
+            <if test="tag != null ">and problem.tag = #{tag,jdbcType=VARCHAR}</if>
+            <if test="publicStatus != null ">and problem.public_status = #{publicStatus,jdbcType=TINYINT}</if>
+            <if test="descriptionId != null ">and problem.description_id = #{descriptionId,jdbcType=INTEGER}</if>
+            <if test="timeLimit != null ">and problem.time_limit = #{timeLimit,jdbcType=INTEGER}</if>
+            <if test="updatedTime != null ">and problem.updated_time = #{updatedTime,jdbcType=DATE}</if>
+            <if test="id != null ">and problem.id = #{id,jdbcType=INTEGER}</if>
         </where>
-    </select> 
+    </select>
 
     <!-- 通过Problem的id获得对应数据库中表的数据对象-->
     <select id="selectProblemById" parameterType="java.lang.Integer" resultMap="result_Problem_Map">
-        select 
-            <include refid="problem_Column" /> 
+        select
+        <include refid="problem_Column"/>
         from problem
         where problem.id = #{id,jdbcType=INTEGER}
-    </select> 
+    </select>
 
     <!-- 将Problem插入到对应数据库的表中,包括属性值为null的数据-->
 
     <insert id="insertProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
-        insert into problem(id,updated_time,time_limit,public_status,memory_limit,title,original_oj,original_id,url) 
-        values(#{id,jdbcType=INTEGER},now(),#{timeLimit,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
+        insert into problem(id,updated_time,time_limit,description_id,public_status,tag,memory_limit,title,original_oj,original_id,url)
+        values(#{id,jdbcType=INTEGER},now(),#{timeLimit,jdbcType=INTEGER},#{descriptionId,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{tag,jdbcType=VARCHAR},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将Problem中属性值不为null的数据,插入到对应数据库的表中-->
-    <insert id="insertNonEmptyProblem" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
+    <insert id="insertNonEmptyProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
         insert into problem
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
-            <if test="updatedTime != null">updated_time,</if>
+            updated_time,
             <if test="timeLimit != null">time_limit,</if>
+            <if test="descriptionId != null">description_id,</if>
             <if test="publicStatus != null">public_status,</if>
+            <if test="tag != null">tag,</if>
             <if test="memoryLimit != null">memory_limit,</if>
             <if test="title != null">title,</if>
             <if test="originalOj != null">original_oj,</if>
@@ -86,23 +95,27 @@
             <if test="url != null">url,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
-            <if test="updatedTime != null"> #{updatedTime,jdbcType=DATE},</if>
-            <if test="timeLimit != null"> #{timeLimit,jdbcType=INTEGER},</if>
-            <if test="publicStatus != null"> #{publicStatus,jdbcType=TINYINT},</if>
-            <if test="memoryLimit != null"> #{memoryLimit,jdbcType=INTEGER},</if>
-            <if test="title != null"> #{title,jdbcType=VARCHAR},</if>
-            <if test="originalOj != null"> #{originalOj,jdbcType=SMALLINT},</if>
-            <if test="originalId != null"> #{originalId,jdbcType=VARCHAR},</if>
-            <if test="url != null"> #{url,jdbcType=VARCHAR},</if>
+            <if test="id != null">#{id,jdbcType=INTEGER},</if>
+            now(),
+            <if test="timeLimit != null">#{timeLimit,jdbcType=INTEGER},</if>
+            <if test="descriptionId != null">#{descriptionId,jdbcType=INTEGER},</if>
+            <if test="publicStatus != null">#{publicStatus,jdbcType=TINYINT},</if>
+            <if test="tag != null">#{tag,jdbcType=VARCHAR},</if>
+            <if test="memoryLimit != null">#{memoryLimit,jdbcType=INTEGER},</if>
+            <if test="title != null">#{title,jdbcType=VARCHAR},</if>
+            <if test="originalOj != null">#{originalOj,jdbcType=SMALLINT},</if>
+            <if test="originalId != null">#{originalId,jdbcType=VARCHAR},</if>
+            <if test="url != null">#{url,jdbcType=VARCHAR},</if>
         </trim>
     </insert>
 
     <!-- 将Problem批量插入到对应数据库的表中-->
     <insert id="insertProblemByBatch" parameterType="ArrayList">
-        insert into problem(id,updated_time,time_limit,public_status,memory_limit,title,original_oj,original_id,url) values
-        <foreach collection="list" item="item" index="index" separator="," >
-            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.timeLimit,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.originalOj,jdbcType=SMALLINT},#{item.originalId,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR})
+        insert into
+        problem(id,updated_time,time_limit,description_id,public_status,tag,memory_limit,title,original_oj,original_id,url)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.timeLimit,jdbcType=INTEGER},#{item.descriptionId,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.tag,jdbcType=VARCHAR},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.originalOj,jdbcType=SMALLINT},#{item.originalId,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -115,14 +128,16 @@
     <!-- 通过Problem的id将Problem的数据更新到数据库中对应的表,包括值null的数据-->
     <update id="updateProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
         update problem set
-            updated_time=#{updatedTime,jdbcType=DATE}
-            ,time_limit=#{timeLimit,jdbcType=INTEGER}
-            ,public_status=#{publicStatus,jdbcType=TINYINT}
-            ,memory_limit=#{memoryLimit,jdbcType=INTEGER}
-            ,title=#{title,jdbcType=VARCHAR}
-            ,original_oj=#{originalOj,jdbcType=SMALLINT}
-            ,original_id=#{originalId,jdbcType=VARCHAR}
-            ,url=#{url,jdbcType=VARCHAR}
+        updated_time=#{updatedTime,jdbcType=DATE}
+        ,time_limit=#{timeLimit,jdbcType=INTEGER}
+        ,description_id=#{descriptionId,jdbcType=INTEGER}
+        ,public_status=#{publicStatus,jdbcType=TINYINT}
+        ,tag=#{tag,jdbcType=VARCHAR}
+        ,memory_limit=#{memoryLimit,jdbcType=INTEGER}
+        ,title=#{title,jdbcType=VARCHAR}
+        ,original_oj=#{originalOj,jdbcType=SMALLINT}
+        ,original_id=#{originalId,jdbcType=VARCHAR}
+        ,url=#{url,jdbcType=VARCHAR}
         where id=#{id,jdbcType=INTEGER}
     </update>
 
@@ -130,12 +145,20 @@
     <update id="updateNonEmptyProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
         update problem
         <set>
-            updated_time=#{now(),jdbcType=DATE},
+            <if test="updatedTime != null">
+                updated_time=#{updatedTime,jdbcType=DATE},
+            </if>
             <if test="timeLimit != null">
                 time_limit=#{timeLimit,jdbcType=INTEGER},
             </if>
+            <if test="descriptionId != null">
+                description_id=#{descriptionId,jdbcType=INTEGER},
+            </if>
             <if test="publicStatus != null">
                 public_status=#{publicStatus,jdbcType=TINYINT},
+            </if>
+            <if test="tag != null">
+                tag=#{tag,jdbcType=VARCHAR},
             </if>
             <if test="memoryLimit != null">
                 memory_limit=#{memoryLimit,jdbcType=INTEGER},

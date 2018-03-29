@@ -30,6 +30,10 @@
         <spring.version>5.0.2.RELEASE</spring.version>
 
         <jackson.version>2.9.4</jackson.version>
+
+        <apache-lang3.version>3.7</apache-lang3.version>
+        <apache-collections4.version>4.1</apache-collections4.version>
+        <apache-math3.version>3.6.1</apache-math3.version>
     </properties>
 
     <dependencies>
@@ -159,6 +163,22 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- 7. apache 工具 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${apache-collections4.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>${apache-math3.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>
