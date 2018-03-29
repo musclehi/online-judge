@@ -29,7 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @date 2018/3/27
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:spring/spring-config.xml")
+// 必须加载 mvc 配置文件，否则无法正常处理请求
+@ContextConfiguration({"classpath:spring/spring-config.xml", "classpath:spring/spring-config-mvc.xml"})
 // 所有对数据库的增删改都会回滚，防止产生脏数据，便于重复测试
 @Rollback
 @Transactional
@@ -49,15 +50,11 @@ public class OriginalProblemControllerTest {
     public void addTest() {
         OriginalProblem originalProblem = initOriginalProblem();
         try {
-
             String originalProblemJson = JsonUtil.ObjectToJson(originalProblem);
-            String requestBody = String.format("{\"originalProblemJson\":\"%s\"}", originalProblemJson);
             MvcResult responseString = mockMvc.perform(post("/originalProblem/add")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .accept(MediaType.APPLICATION_JSON)
-                    //.content(requestBody)
                     .param("originalProblemJson", originalProblemJson)
-                    ).andExpect(status().isOk())
+            ).andExpect(status().isOk())
                     .andDo(MockMvcResultHandlers.print())
                     .andReturn();
             System.out.println(responseString);
