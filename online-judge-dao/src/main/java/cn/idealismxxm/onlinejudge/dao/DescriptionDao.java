@@ -1,5 +1,5 @@
 package cn.idealismxxm.onlinejudge.dao;
-import cn.idealismxxm.onlinejudge.entity.Description;
+import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import java.util.List;
 public interface DescriptionDao{
 	/**

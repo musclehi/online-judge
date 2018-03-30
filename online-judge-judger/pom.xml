@@ -11,7 +11,12 @@
     <name>online-judge-judger</name>
     <url>http://maven.apache.org</url>
     <dependencies>
-
+        <!-- 依赖 service 模块 -->
+        <dependency>
+            <groupId>cn.idealism-xxm</groupId>
+            <artifactId>online-judge-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>online-judge-judger</finalName>

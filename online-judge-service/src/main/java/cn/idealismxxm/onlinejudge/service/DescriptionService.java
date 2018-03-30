@@ -1,6 +1,6 @@
 package cn.idealismxxm.onlinejudge.service;
 import java.util.List;
-import cn.idealismxxm.onlinejudge.entity.Description;
+import cn.idealismxxm.onlinejudge.domain.entity.Description;
 public interface DescriptionService{
 	/**
 	 * 获得Description数据的总行数

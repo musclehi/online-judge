@@ -1,6 +1,7 @@
 package cn.idealismxxm.onlinejudge.service;
 
-import cn.idealismxxm.onlinejudge.entity.Problem;
+import cn.idealismxxm.onlinejudge.domain.entity.Description;
+import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 
 /**
  * 题目相关操作接口
@@ -21,18 +22,18 @@ public interface ProblemService {
     /**
      * 添加题目
      *
-     * @param problemJson     题目json
-     * @param descriptionJson 题目描述json
+     * @param problem    题目
+     * @param description 题目描述
      * @return 主键
      */
-    Integer addProblem(String problemJson, String descriptionJson);
+    Integer addProblem(Problem problem, Description description);
 
     /**
      * 编辑题目
      *
-     * @param problemJson     题目json
-     * @param descriptionJson 题目描述json
+     * @param problem     题目
+     * @param description 题目描述
      * @return true / false
      */
-    Boolean editProblem(String problemJson, String descriptionJson);
+    Boolean editProblem(Problem problem, Description description);
 }

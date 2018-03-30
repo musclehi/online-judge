@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.idealismxxm.onlinejudge.dao.ProblemDao">
     <!-- Problem的resultMap,column是给数据库列起的别名,它对应property类的属性-->
-    <resultMap id="result_Problem_Map" type="cn.idealismxxm.onlinejudge.entity.Problem">
+    <resultMap id="result_Problem_Map" type="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="updated_time" jdbcType="DATE" property="updatedTime"/>
         <result column="time_limit" jdbcType="INTEGER" property="timeLimit"/>
@@ -43,7 +43,7 @@
     </select>
 
     <!-- 获得一个Problem对象,以参数Problem对象中不为空的属性作为条件进行查询-->
-    <select id="selectProblemByObj" parameterType="cn.idealismxxm.onlinejudge.entity.Problem"
+    <select id="selectProblemByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem"
             resultMap="result_Problem_Map">
         select
         <include refid="problem_Column"/>
@@ -73,13 +73,13 @@
 
     <!-- 将Problem插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
+    <insert id="insertProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         insert into problem(id,updated_time,time_limit,description_id,public_status,tag,memory_limit,title,original_oj,original_id,url)
         values(#{id,jdbcType=INTEGER},now(),#{timeLimit,jdbcType=INTEGER},#{descriptionId,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{tag,jdbcType=VARCHAR},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将Problem中属性值不为null的数据,插入到对应数据库的表中-->
-    <insert id="insertNonEmptyProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
+    <insert id="insertNonEmptyProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         insert into problem
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -126,7 +126,7 @@
     </delete>
 
     <!-- 通过Problem的id将Problem的数据更新到数据库中对应的表,包括值null的数据-->
-    <update id="updateProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
+    <update id="updateProblemById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         update problem set
         updated_time=#{updatedTime,jdbcType=DATE}
         ,time_limit=#{timeLimit,jdbcType=INTEGER}
@@ -142,7 +142,7 @@
     </update>
 
     <!-- 通过Problem的id将Problem中属性值不为null的数据更新到数据库对应的表中-->
-    <update id="updateNonEmptyProblemById" parameterType="cn.idealismxxm.onlinejudge.entity.Problem">
+    <update id="updateNonEmptyProblemById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         update problem
         <set>
             <if test="updatedTime != null">

@@ -34,6 +34,9 @@
         <apache-lang3.version>3.7</apache-lang3.version>
         <apache-collections4.version>4.1</apache-collections4.version>
         <apache-math3.version>3.6.1</apache-math3.version>
+
+        <activemq-all.version>5.15.3</activemq-all.version>
+        <jms-api.version>2.0.1</jms-api.version>
     </properties>
 
     <dependencies>
@@ -87,6 +90,12 @@
             <groupId>com.github.httl</groupId>
             <artifactId>httl-springmvc</artifactId>
             <version>${httl.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-webmvc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -150,6 +159,12 @@
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <!--    ⑤spring jms-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
         <!-- 6. jackson -->
         <dependency>
@@ -178,6 +193,30 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>${apache-math3.version}</version>
+        </dependency>
+
+        <!-- 8. MQ -->
+        <!-- java.lang.ClassNotFoundException: javax.jms.JMSContext 解决方法
+             https://www.imooc.com/qadetail/244908?lastmedia=1 -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+            <version>${activemq-all.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-context</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-jms_1.1_spec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
+            <version>${jms-api.version}</version>
         </dependency>
     </dependencies>
     <build>

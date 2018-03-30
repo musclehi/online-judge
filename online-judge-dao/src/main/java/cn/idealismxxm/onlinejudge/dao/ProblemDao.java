@@ -1,6 +1,6 @@
 package cn.idealismxxm.onlinejudge.dao;
 
-import cn.idealismxxm.onlinejudge.entity.Problem;
+import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 
 import java.util.List;
 

@@ -2,13 +2,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- 引入属性文件 -->
-    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 将多个配置文件读取到容器中，交给Spring管理 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <!-- classpath 寻址 -->
+                <value>classpath:jdbc.properties</value>
+                <value>classpath:activemq.properties</value>
+                <!--&lt;!&ndash; 推荐使用file的方式引入，这样可以将配置和代码分离 &ndash;&gt;-->
+                <!--<value>file:/opt/demo/config/demo-mq.properties</value>-->
+                <!--<value>file:/opt/demo/config/demo-remote.properties</value>-->
+            </list>
+        </property>
+    </bean>
 
     <!-- 注解扫描 -->
-    <context:component-scan base-package="cn.idealismxxm.onlinejudge" />
+    <context:component-scan base-package="cn.idealismxxm.onlinejudge"/>
 
+    <import resource="spring-config-mybatis.xml"/>
+    <import resource="classpath:activemq/activemq.xml"/>
 </beans>

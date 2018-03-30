@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.idealismxxm.onlinejudge.dao.DescriptionDao">
     <!-- Description的resultMap,column是给数据库列起的别名,它对应property类的属性-->
-    <resultMap id="result_Description_Map" type="cn.idealismxxm.onlinejudge.entity.Description">
+    <resultMap id="result_Description_Map" type="cn.idealismxxm.onlinejudge.domain.entity.Description">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="output" jdbcType="VARCHAR" property="output"/>
         <result column="input" jdbcType="VARCHAR" property="input"/>
@@ -35,7 +35,7 @@
     </select>
 
     <!-- 获得一个Description对象,以参数Description对象中不为空的属性作为条件进行查询-->
-    <select id="selectDescriptionByObj" parameterType="cn.idealismxxm.onlinejudge.entity.Description"
+    <select id="selectDescriptionByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Description"
             resultMap="result_Description_Map">
         select
         <include refid="description_Column"/>
@@ -61,13 +61,13 @@
 
     <!-- 将Description插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertDescription" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+    <insert id="insertDescription" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.domain.entity.Description">
         insert into description(id,output,input,extension,sample_input,sample_output,description) 
         values(#{id,jdbcType=INTEGER},#{output,jdbcType=VARCHAR},#{input,jdbcType=VARCHAR},#{extension,jdbcType=VARCHAR},#{sampleInput,jdbcType=VARCHAR},#{sampleOutput,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将Description中属性值不为null的数据,插入到对应数据库的表中-->
-    <insert id="insertNonEmptyDescription" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+    <insert id="insertNonEmptyDescription" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.domain.entity.Description">
         insert into description
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -104,7 +104,7 @@
     </delete>
 
     <!-- 通过Description的id将Description的数据更新到数据库中对应的表,包括值null的数据-->
-    <update id="updateDescriptionById" parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+    <update id="updateDescriptionById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Description">
         update description set
             output=#{output,jdbcType=VARCHAR}
             ,input=#{input,jdbcType=VARCHAR}
@@ -116,7 +116,7 @@
     </update>
 
     <!-- 通过Description的id将Description中属性值不为null的数据更新到数据库对应的表中-->
-    <update id="updateNonEmptyDescriptionById" parameterType="cn.idealismxxm.onlinejudge.entity.Description">
+    <update id="updateNonEmptyDescriptionById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Description">
         update description
         <set>
             <if test="output != null">

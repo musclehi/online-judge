@@ -1,7 +1,7 @@
 package cn.idealismxxm.onlinejudge.service.impl;
 import java.util.List;
 import cn.idealismxxm.onlinejudge.dao.DescriptionDao;
-import cn.idealismxxm.onlinejudge.entity.Description;
+import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import cn.idealismxxm.onlinejudge.service.DescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

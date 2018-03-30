@@ -1,5 +1,5 @@
 package cn.idealismxxm.onlinejudge.dao;
-import cn.idealismxxm.onlinejudge.entity.Submission;
+import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import java.util.List;
 public interface SubmissionDao{
 	/**

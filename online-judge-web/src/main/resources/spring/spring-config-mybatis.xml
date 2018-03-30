@@ -15,7 +15,6 @@
     <!-- 自动扫描 -->
     <context:component-scan base-package="cn.idealismxxm.onlinejudge" />
 
-    <context:property-placeholder location="classpath:jdbc.properties" />
     <!-- 数据库连接池 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
           destroy-method="close">
