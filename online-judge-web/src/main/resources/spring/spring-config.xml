@@ -11,7 +11,7 @@
             <list>
                 <!-- classpath 寻址 -->
                 <value>classpath:jdbc.properties</value>
-                <value>classpath:d</value>
+                <value>classpath:activemq.properties</value>
                 <!--&lt;!&ndash; 推荐使用file的方式引入，这样可以将配置和代码分离 &ndash;&gt;-->
                 <!--<value>file:/opt/demo/config/demo-mq.properties</value>-->
                 <!--<value>file:/opt/demo/config/demo-remote.properties</value>-->

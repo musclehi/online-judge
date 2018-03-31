@@ -35,7 +35,9 @@
         <apache-collections4.version>4.1</apache-collections4.version>
         <apache-math3.version>3.6.1</apache-math3.version>
 
-        <activemq-all.version>5.15.3</activemq-all.version>
+        <activemq-core.version>5.7.0</activemq-core.version>
+        <activemq-broker.version>5.15.3</activemq-broker.version>
+        <xbean-spring.version>4.7</xbean-spring.version>
         <jms-api.version>2.0.1</jms-api.version>
     </properties>
 
@@ -200,18 +202,38 @@
              https://www.imooc.com/qadetail/244908?lastmedia=1 -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-all</artifactId>
-            <version>${activemq-all.version}</version>
+            <artifactId>activemq-core</artifactId>
+            <version>${activemq-core.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>spring-context</artifactId>
                     <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-jms_1.1_spec</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.fusesource.hawtbuf</groupId>
+                    <artifactId>hawtbuf</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemq-broker.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-spring</artifactId>
+            <version>${xbean-spring.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
@@ -219,6 +241,7 @@
             <version>${jms-api.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
             <resource>
