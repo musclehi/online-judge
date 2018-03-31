@@ -23,11 +23,11 @@ public class MessageProducer {
     @Resource
     private JmsTemplate jmsTemplate;
 
-    public void sendMessage(String destinationName, String message) {
+    public void sendTextMessage(String destinationName, String text) {
         try {
-            jmsTemplate.send(destinationName, session -> session.createTextMessage(message));
+            jmsTemplate.send(destinationName, session -> session.createTextMessage(text));
         } catch (Exception e) {
-            LOGGER.error("#sendMessage error, message: {}", message, e);
+            LOGGER.error("#sendMessage error, message: {}", text, e);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.MESSAGE_PRODUCE_ERROR);
         }
     }

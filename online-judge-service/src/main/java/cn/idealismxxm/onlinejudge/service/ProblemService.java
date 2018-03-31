@@ -2,6 +2,9 @@ package cn.idealismxxm.onlinejudge.service;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import cn.idealismxxm.onlinejudge.domain.entity.Problem;
+import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
+
+import java.util.List;
 
 /**
  * 题目相关操作接口
@@ -22,18 +25,20 @@ public interface ProblemService {
     /**
      * 添加题目
      *
-     * @param problem    题目
+     * @param problem     题目
      * @param description 题目描述
+     * @param testCases   测试用例列表
      * @return 主键
      */
-    Integer addProblem(Problem problem, Description description);
+    Integer addProblem(Problem problem, Description description, List<TestCase> testCases);
 
     /**
      * 编辑题目
      *
      * @param problem     题目
      * @param description 题目描述
+     * @param testCases   测试用例列表
      * @return true / false
      */
-    Boolean editProblem(Problem problem, Description description);
+    Boolean editProblem(Problem problem, Description description, List<TestCase> testCases);
 }

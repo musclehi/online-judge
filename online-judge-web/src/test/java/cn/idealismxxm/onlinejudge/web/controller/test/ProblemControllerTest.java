@@ -2,6 +2,7 @@ package cn.idealismxxm.onlinejudge.web.controller.test;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import cn.idealismxxm.onlinejudge.domain.entity.Problem;
+import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
 import cn.idealismxxm.onlinejudge.domain.enums.OnlineJudgeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.PublicStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
@@ -20,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Resource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,12 +56,14 @@ public class ProblemControllerTest {
     public void addTest() {
         Problem problem = this.initProblem();
         Description description = this.initDescription();
+        List<TestCase> testCases = this.initTestCases();
         try {
             String responseString = mockMvc.perform(post("/problem/add")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .header("X-Requested-With", "XMLHttpRequest")
                     .param("problemJson", JsonUtil.objectToJson(problem))
                     .param("descriptionJson", JsonUtil.objectToJson(description))
+                    .param("testCasesJson", JsonUtil.objectToJson(testCases))
             ).andExpect(status().isOk())
                     .andDo(MockMvcResultHandlers.print())
                     .andReturn().getResponse().getContentAsString();
@@ -71,12 +77,14 @@ public class ProblemControllerTest {
     public void editTest() {
         Problem problem = this.initProblem();
         Description description = this.initDescription();
+        List<TestCase> testCases = this.initTestCases();
         try {
             String responseString = mockMvc.perform(post("/problem/edit")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .header("X-Requested-With", "XMLHttpRequest")
                     .param("problemJson", JsonUtil.objectToJson(problem))
                     .param("descriptionJson", JsonUtil.objectToJson(description))
+                    .param("testCasesJson", JsonUtil.objectToJson(testCases))
             ).andExpect(status().isOk())
                     .andDo(MockMvcResultHandlers.print())
                     .andReturn().getResponse().getContentAsString();
@@ -120,5 +128,25 @@ public class ProblemControllerTest {
         description.setExtension("{}");
 
         return description;
+    }
+
+    /**
+     * 初始化测试用的测试用例列表
+     *
+     * @return 测试用例列表
+     */
+    private List<TestCase> initTestCases() {
+        int length = 2;
+        List<TestCase> testCases = new ArrayList<>(length);
+        for(int i = 1; i <= length; ++i) {
+            TestCase testCase = new TestCase();
+            testCase.setInput(i + " " + (i + 1));
+            testCase.setOutput((i << 1) + 1 + "");
+            testCase.setScore(1);
+
+            testCases.add(testCase);
+        }
+
+        return testCases;
     }
 }

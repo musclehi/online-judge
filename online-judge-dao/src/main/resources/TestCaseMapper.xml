@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.TestCaseDao">
+    <!-- TestCase的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_TestCase_Map" type="cn.idealismxxm.onlinejudge.domain.entity.TestCase">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="output" jdbcType="VARCHAR" property="output" />
+        <result column="score" jdbcType="TINYINT" property="score" />
+        <result column="input" jdbcType="VARCHAR" property="input" />
+        <result column="problem_id" jdbcType="INTEGER" property="problemId" />
+    </resultMap>
+
+    <!-- 数据库中表名为:test_case的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="test_case_Column">
+        test_case.id as id
+        ,test_case.output as output
+        ,test_case.score as score
+        ,test_case.input as input
+        ,test_case.problem_id as problem_id
+    </sql>
+
+    <!--获得类名为:TestCase对应的数据库表的数据总行数 -->
+    <select id="getTestCaseRowCount" resultType="java.lang.Long">
+        select count(id) from test_case
+    </select>
+    <!-- 获得类名为:TestCase对应数据库中表的数据集合 -->
+    <select id="selectTestCase" resultMap="result_TestCase_Map">
+        select 
+        <include refid="test_case_Column" /> 
+        from test_case
+    </select> 
+
+    <!-- 获得一个TestCase对象,以参数TestCase对象中不为空的属性作为条件进行查询-->
+    <select id="selectTestCaseByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.TestCase" resultMap="result_TestCase_Map">
+        select 
+            <include refid="test_case_Column" /> 
+        from test_case
+        <where>
+            <if test="problemId != null "> and test_case.problem_id = #{problemId,jdbcType=INTEGER}</if>
+            <if test="input != null "> and test_case.input = #{input,jdbcType=VARCHAR}</if>
+            <if test="score != null "> and test_case.score = #{score,jdbcType=TINYINT}</if>
+            <if test="output != null "> and test_case.output = #{output,jdbcType=VARCHAR}</if>
+            <if test="id != null "> and test_case.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select> 
+
+    <!-- 通过TestCase的id获得对应数据库中表的数据对象-->
+    <select id="selectTestCaseById" parameterType="java.lang.Integer" resultMap="result_TestCase_Map">
+        select 
+            <include refid="test_case_Column" /> 
+        from test_case
+        where test_case.id = #{id,jdbcType=INTEGER}
+    </select> 
+
+    <!-- 将TestCase插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertTestCase" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.TestCase">
+        insert into test_case(id,output,score,input,problem_id) 
+        values(#{id,jdbcType=INTEGER},#{output,jdbcType=VARCHAR},#{score,jdbcType=TINYINT},#{input,jdbcType=VARCHAR},#{problemId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 将TestCase中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyTestCase" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.TestCase">
+        insert into test_case
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="output != null">output,</if>
+            <if test="score != null">score,</if>
+            <if test="input != null">input,</if>
+            <if test="problemId != null">problem_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            <if test="output != null"> #{output,jdbcType=VARCHAR},</if>
+            <if test="score != null"> #{score,jdbcType=TINYINT},</if>
+            <if test="input != null"> #{input,jdbcType=VARCHAR},</if>
+            <if test="problemId != null"> #{problemId,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
+
+    <!-- 将TestCase批量插入到对应数据库的表中-->
+    <insert id="insertTestCaseByBatch" parameterType="ArrayList">
+        insert into test_case(id,output,score,input,problem_id) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=INTEGER},#{item.output,jdbcType=VARCHAR},#{item.score,jdbcType=TINYINT},#{item.input,jdbcType=VARCHAR},#{item.problemId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!-- 通过TestCase的id将数据库表中对应的数据删除-->
+    <delete id="deleteTestCaseById" parameterType="java.lang.Integer">
+        delete from test_case
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过TestCase的id将TestCase的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateTestCaseById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.TestCase">
+        update test_case set
+            output=#{output,jdbcType=VARCHAR}
+            ,score=#{score,jdbcType=TINYINT}
+            ,input=#{input,jdbcType=VARCHAR}
+            ,problem_id=#{problemId,jdbcType=INTEGER}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过TestCase的id将TestCase中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyTestCaseById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.TestCase">
+        update test_case
+        <set>
+            <if test="output != null">
+                output=#{output,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score=#{score,jdbcType=TINYINT},
+            </if>
+            <if test="input != null">
+                input=#{input,jdbcType=VARCHAR},
+            </if>
+            <if test="problemId != null">
+                problem_id=#{problemId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 返回 problemId 下的所有测试用例 -->
+    <select id="listTestCaseByProblemId" parameterType="java.lang.Integer" resultMap="result_TestCase_Map">
+        SELECT
+        <include refid="test_case_Column" />
+        FROM test_case
+        WHERE problem_id = #{problemId,jdbcType=INTEGER}
+        ORDER BY id ASC
+    </select>
+
+</mapper>

@@ -7,9 +7,9 @@ import cn.idealismxxm.onlinejudge.domain.enums.ActiveMQQueueEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ResultEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
+import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
 import cn.idealismxxm.onlinejudge.service.SubmissionService;
-import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.jms.producer.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +38,31 @@ public class SubmissionServiceImpl implements SubmissionService {
     private MessageProducer messageProducer;
 
     @Override
+    public Submission getSubmissionById(Integer submissionId) {
+        // 参数校验
+        if (submissionId == null || submissionId <= 0) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        // 读库
+        Submission submission;
+        try {
+            submission = submissionDao.selectSubmissionById(submissionId);
+        } catch (Exception e) {
+            LOGGER.error("#getSubmissionById error, submissionId: {}", submissionId, e);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+        }
+
+        // 验证数据是否存在
+        if (submission == null) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.SUBMISSION_NOT_EXIST);
+        }
+        return submission;
+    }
+
+    @Override
     public Integer submit(Submission submission) {
-        if(submission == null || submission.getProblemId() == null) {
+        if (submission == null || submission.getProblemId() == null) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
 
@@ -60,7 +83,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             submissionDao.insertSubmission(submission);
 
             // 发送 mq 给判题端
-            messageProducer.sendMessage(ActiveMQQueueEnum.SUBMISSION_SUBMIT_QUEUE.getName(), JsonUtil.objectToJson(submission));
+            messageProducer.sendTextMessage(ActiveMQQueueEnum.SUBMISSION_SUBMIT_QUEUE.getName(), submission.getId().toString());
 
             return submission.getId();
         } catch (Exception e) {

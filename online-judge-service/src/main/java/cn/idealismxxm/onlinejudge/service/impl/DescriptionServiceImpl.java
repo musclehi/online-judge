@@ -1,61 +1,50 @@
 package cn.idealismxxm.onlinejudge.service.impl;
-import java.util.List;
+
 import cn.idealismxxm.onlinejudge.dao.DescriptionDao;
 import cn.idealismxxm.onlinejudge.domain.entity.Description;
+import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.service.DescriptionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-@Service
-public class DescriptionServiceImpl implements DescriptionService{
-    @Autowired
+
+import javax.annotation.Resource;
+
+/**
+ * 题目描述相关操作接口实现
+ *
+ * @author idealism
+ * @date 2018/3/30
+ */
+@Service("descriptionService")
+public class DescriptionServiceImpl implements DescriptionService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DescriptionServiceImpl.class);
+
+    @Resource
     private DescriptionDao descriptionDao;
-    @Override
-    public long getDescriptionRowCount(){
-        return descriptionDao.getDescriptionRowCount();
-    }
-    @Override
-    public List<Description> selectDescription(){
-        return descriptionDao.selectDescription();
-    }
-    @Override
-    public Description selectDescriptionByObj(Description obj){
-        return descriptionDao.selectDescriptionByObj(obj);
-    }
-    @Override
-    public Description selectDescriptionById(Integer id){
-        return descriptionDao.selectDescriptionById(id);
-    }
-    @Override
-    public int insertDescription(Description value){
-        return descriptionDao.insertDescription(value);
-    }
-    @Override
-    public int insertNonEmptyDescription(Description value){
-        return descriptionDao.insertNonEmptyDescription(value);
-    }
-    @Override
-    public int insertDescriptionByBatch(List<Description> value){
-        return descriptionDao.insertDescriptionByBatch(value);
-    }
-    @Override
-    public int deleteDescriptionById(Integer id){
-        return descriptionDao.deleteDescriptionById(id);
-    }
-    @Override
-    public int updateDescriptionById(Description enti){
-        return descriptionDao.updateDescriptionById(enti);
-    }
-    @Override
-    public int updateNonEmptyDescriptionById(Description enti){
-        return descriptionDao.updateNonEmptyDescriptionById(enti);
-    }
 
-    public DescriptionDao getDescriptionDao() {
-        return this.descriptionDao;
-    }
+    @Override
+    public Description getDescriptionById(Integer descriptionId) {
+        // 参数校验
+        if (descriptionId == null || descriptionId <= 0) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
 
-    public void setDescriptionDao(DescriptionDao descriptionDao) {
-        this.descriptionDao = descriptionDao;
-    }
+        // 读库
+        Description description;
+        try {
+            description = descriptionDao.selectDescriptionById(descriptionId);
+        } catch (Exception e) {
+            LOGGER.error("#getDescriptionById error, descriptionId: {}", descriptionId, e);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+        }
 
+        // 验证数据是否存在
+        if (description == null) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.SUBMISSION_NOT_EXIST);
+        }
+        return description;
+    }
 }

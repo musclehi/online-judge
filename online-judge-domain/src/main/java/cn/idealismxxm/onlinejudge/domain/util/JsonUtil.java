@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class JsonUtil {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_WRITE_VALUE_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_WRITE_VALUE_ERROR, e);
         }
     }
 
@@ -47,7 +48,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue(json, valueClass);
         } catch (Exception e) {
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_READ_VALUE_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_READ_VALUE_ERROR, e);
         }
     }
 
@@ -61,10 +62,10 @@ public class JsonUtil {
      */
     public static <K, V> Map<K, V> jsonToMap(String json, Class<K> keyClass, Class<V> valueClass) {
         try {
-            JavaType javaType = objectMapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
+            JavaType javaType = objectMapper.getTypeFactory().constructParametricType(HashMap.class, keyClass, valueClass);
             return objectMapper.readValue(json, javaType);
         } catch (Exception e) {
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_READ_VALUE_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_READ_VALUE_ERROR, e);
         }
     }
 
@@ -76,11 +77,14 @@ public class JsonUtil {
      * @return 反序列化后的 list对象
      */
     public static <T> List<T> jsonToList(String json, Class<T> valueClass) {
+        if(StringUtils.isBlank(json)) {
+            return null;
+        }
         try {
-            JavaType javaType = objectMapper.getTypeFactory().constructArrayType(valueClass);
+            JavaType javaType = objectMapper.getTypeFactory().constructParametricType(LinkedList.class, valueClass);
             return objectMapper.readValue(json, javaType);
         } catch (Exception e) {
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_READ_VALUE_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.JSON_READ_VALUE_ERROR, e);
         }
     }
 }
