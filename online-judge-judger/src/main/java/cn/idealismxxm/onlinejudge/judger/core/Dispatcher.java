@@ -17,14 +17,18 @@ public class Dispatcher {
 
     private static Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
-
-
     /**
-     * 为编译做好准备工作
+     * 开始评测
      *
      * @param submission 提交记录
      */
-    private void prepare(Submission submission) {
+    public void startJudge(Submission submission) {
+        // 1. 预处理
 
+        // 2. 编译
+
+        // 3. 运行
+
+        // 4. 结果分析
     }
 }
