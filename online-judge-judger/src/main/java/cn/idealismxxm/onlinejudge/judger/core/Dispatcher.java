@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 /**
  * 调度器
  * 调度评测相关操作，控制评测流程
@@ -17,6 +19,8 @@ public class Dispatcher {
 
     private static Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
+    @Resource
+    private Preprocessor preprocessor;
     /**
      * 开始评测
      *
@@ -24,7 +28,7 @@ public class Dispatcher {
      */
     public void startJudge(Submission submission) {
         // 1. 预处理
-
+        preprocessor.doPreprocess(submission);
         // 2. 编译
 
         // 3. 运行
