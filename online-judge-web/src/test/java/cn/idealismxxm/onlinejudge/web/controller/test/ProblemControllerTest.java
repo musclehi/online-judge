@@ -76,6 +76,7 @@ public class ProblemControllerTest {
     @Test
     public void editTest() {
         Problem problem = this.initProblem();
+        problem.setId(57);
         Description description = this.initDescription();
         List<TestCase> testCases = this.initTestCases();
         try {
@@ -137,9 +138,11 @@ public class ProblemControllerTest {
      */
     private List<TestCase> initTestCases() {
         int length = 2;
+        int IdOffset = 5;
         List<TestCase> testCases = new ArrayList<>(length);
         for(int i = 1; i <= length; ++i) {
             TestCase testCase = new TestCase();
+            testCase.setId(IdOffset + i - 1);
             testCase.setInput(i + " " + (i + 1));
             testCase.setOutput((i << 1) + 1 + "");
             testCase.setScore(1);

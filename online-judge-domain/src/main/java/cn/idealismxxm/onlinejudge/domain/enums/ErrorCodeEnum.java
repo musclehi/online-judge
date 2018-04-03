@@ -24,6 +24,8 @@ public enum ErrorCodeEnum {
     DESCRIPTION_NOT_EXIST("0014", "题目描述不存在"),
     TEST_CASE_NOT_EXIST("0015", "测试用例不存在"),
     DATA_SAVE_ERROR("0016", "数据保存异常"),
+    FILE_CREATE_ERROR("0017", "文件创建失败"),
+    FILE_WRITE_ERROR("0018", "文件写入失败"),
     UNKNOWN("9999", "未知错误"),
     ;
 

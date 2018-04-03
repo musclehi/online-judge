@@ -132,7 +132,7 @@ public class ProblemServiceImpl implements ProblemService {
             descriptionDao.updateNonEmptyDescriptionById(description);
 
             // 3. 测试用例入库
-            this.saveTestCases(problem, testCases);
+            this.saveTestCases(oldProblem.getId(), oldProblem.getOriginalOj(), testCases);
 
             return true;
         } catch (BusinessException e) {
@@ -177,12 +177,13 @@ public class ProblemServiceImpl implements ProblemService {
     /**
      * 保存本平台题目的测试用例
      *
-     * @param problem   题目
-     * @param testCases 测试用例列表
+     * @param problemId  题目id
+     * @param originalOj 原始oj
+     * @param testCases  测试用例列表
      */
-    private void saveTestCases(Problem problem, List<TestCase> testCases) {
+    private void saveTestCases(Integer problemId, Integer originalOj, List<TestCase> testCases) {
         // 只有本平台的题目需要保存测试用例
-        if (OnlineJudgeEnum.THIS.getCode().equals(problem.getId())) {
+        if (OnlineJudgeEnum.THIS.getCode().equals(originalOj)) {
             if (CollectionUtils.isEmpty(testCases)) {
                 throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
             }
@@ -190,7 +191,7 @@ public class ProblemServiceImpl implements ProblemService {
             List<TestCase> toBeInsertedTestCases = new ArrayList<>(testCases.size());
             List<TestCase> toBeUpdatedTestCases = new ArrayList<>(testCases.size());
             testCases.forEach(testCase -> {
-                testCase.setProblemId(problem.getId());
+                testCase.setProblemId(problemId);
                 if (testCase.getId() == null) {
                     toBeInsertedTestCases.add(testCase);
                 } else {

@@ -86,6 +86,9 @@ public class SubmissionServiceImpl implements SubmissionService {
             messageProducer.sendTextMessage(ActiveMQQueueEnum.SUBMISSION_SUBMIT_QUEUE.getName(), submission.getId().toString());
 
             return submission.getId();
+        } catch (BusinessException e) {
+            LOGGER.error("#submit error, submission: {}", JsonUtil.objectToJson(submission), e);
+            throw e;
         } catch (Exception e) {
             LOGGER.error("#submit error, submission: {}", JsonUtil.objectToJson(submission), e);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
