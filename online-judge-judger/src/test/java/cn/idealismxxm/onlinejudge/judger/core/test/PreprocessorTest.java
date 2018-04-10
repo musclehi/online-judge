@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 // 必须加载 mvc 配置文件，否则无法正常处理请求
-@ContextConfiguration({"classpath:spring/spring-config.xml", "classpath:spring/spring-config-mvc.xml"})
+@ContextConfiguration({"classpath:spring/spring-config.xml"})
 // 所有对数据库的增删改都会回滚，防止产生脏数据，便于重复测试
 @Rollback
 @Transactional

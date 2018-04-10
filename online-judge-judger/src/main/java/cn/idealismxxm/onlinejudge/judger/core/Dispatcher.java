@@ -26,6 +26,9 @@ public class Dispatcher {
     @Resource
     private Preprocessor preprocessor;
 
+    @Resource
+    private Compiler compiler;
+
     @Value("${judger.basePath}")
     private String basePath;
 
@@ -42,7 +45,9 @@ public class Dispatcher {
 
         // 1. 预处理
         preprocessor.doPreprocess(workspacePath, submission);
+
         // 2. 编译
+        Integer result = compiler.doCompile(submission.getLanguage(), workspacePath);
 
         // 3. 运行
 
