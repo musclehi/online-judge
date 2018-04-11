@@ -44,6 +44,6 @@ public class CompilerTest {
         Integer submissionId = 1;
         Submission submission = submissionService.getSubmissionById(submissionId);
         String workspacePath = basePath + "/" + workspacePrefix + submission.getId();
-        compiler.doCompile(submission.getLanguage(), workspacePath);
+        System.out.println("doCompilecom result: " + compiler.doCompile(submission.getLanguage(), workspacePath));
     }
 }

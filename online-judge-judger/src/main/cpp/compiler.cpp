@@ -27,7 +27,11 @@
  */
 
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <iterator>
 #include <sys/wait.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -42,8 +46,10 @@ enum LanguageEnum {
     JAVA = 3
 };
 
+char** split(const char* command, const char* delimiter);
+
 JNIEXPORT jint JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Compiler_compile
-    (JNIEnv * jniEnv, jobject selfReference, jint language, jstring compilationCommand) {
+    (JNIEnv * jniEnv, jobject selfReference, jint language, jstring compilationCommand, jstring compilationInfoFilePath) {
 	int pid = fork();
 	// 如果是子进程运行，则进行编译操作
 	if(pid == 0) {
@@ -66,21 +72,22 @@ JNIEXPORT jint JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Compiler_comp
 		}
 		setrlimit(RLIMIT_AS, &LIM);
 
-        // TODO 编译信息输出目录需要重新配置
-        // 将编译信息重定向到 ce.txt
-        freopen("ce.txt", "w", stderr);
+        // 将编译信息重定向到 工作目录的指定文件
+        freopen(jniEnv -> GetStringUTFChars(compilationInfoFilePath, 0), "w", stderr);
 
-		while(setgid(1536) != 0) {
+		while(setgid(1000) != 0) {
 		    sleep(1);
         }
-        while(setuid(1536) != 0) {
+        while(setuid(1000) != 0) {
             sleep(1);
         }
-        while(setresuid(1536, 1536, 1536) != 0) {
+        while(setresuid(1000, 1000, 1000) != 0) {
             sleep(1);
         }
 
-        system(jniEnv->GetStringUTFChars(compilationCommand, 0));
+        char** argv = split(jniEnv -> GetStringUTFChars(compilationCommand, 0), " ");
+        execvp(argv[0], argv);
+
 		exit(0);
 	} else {
 		int status = 0;
@@ -88,4 +95,37 @@ JNIEXPORT jint JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Compiler_comp
 
 		return status;
 	}
+}
+
+/**
+ * 将字符串分割成字符串数组
+ * @param  command  命令
+ * @return 字符串数组列表
+ */
+char** split(const char* command, const char* delimiter) {
+    char* commandCopy = new char[strlen(command) + 1];
+    strcpy(commandCopy, command);
+
+    // 分割字符串，将指针放入 vector
+    std::vector<char*> parts;
+    char* tmp = strtok(commandCopy, delimiter);
+
+    while(tmp != NULL) {
+        char* part = new char[strlen(tmp) + 1];
+        strcpy(part, tmp);
+        parts.push_back(part);
+
+        tmp = strtok(NULL, delimiter);
+    }
+
+    delete commandCopy;
+
+    // vector<char*> 转成 char**
+    char** result = new char*[parts.size() + 1];
+    for(int i = parts.size() - 1; i >= 0; --i) {
+        result[i] = parts[i];
+    }
+    result[parts.size()] = NULL;
+
+    return result;
 }

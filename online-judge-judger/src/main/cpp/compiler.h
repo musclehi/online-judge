@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (ILjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Compiler_compile
-  (JNIEnv *, jobject, jint, jstring);
+  (JNIEnv *, jobject, jint, jstring, jstring);
 
 #ifdef __cplusplus
 }

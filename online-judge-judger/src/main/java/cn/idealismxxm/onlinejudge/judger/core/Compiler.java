@@ -26,21 +26,24 @@ public class Compiler {
     @Value("${judger.sourceFileName}")
     private String sourceFileName;
 
-    public native int compile(int language, String compilationCommand);
+    @Value("${judger.compilationInfoFileName}")
+    private String compilationInfoFileName;
+
+    public native int compile(int language, String compilationCommand, String compilationInfoFilePath);
 
     static {
         try {
             NativeLibraryLoader.loadLibrary("compiler");
         } catch (Exception e) {
             LOGGER.error("#loadLibrary error, libraryName: compiler", e);
-            BusinessException.buildBusinessException(ErrorCodeEnum.LIBRARY_LOAD_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.LIBRARY_LOAD_ERROR);
         }
     }
 
     public Integer doCompile(Integer language, String workspacePath) {
         LanguageEnum languageEnum = Objects.requireNonNull(LanguageEnum.getLanguageEnumByCode(language));
-        String sourceFilePath = workspacePath + "/" + sourceFileName + languageEnum.getSuffix();
-        String compilationCommand = languageEnum.getCompilationCommand(sourceFilePath);
-        return this.compile(language, compilationCommand);
+        String compilationCommand = languageEnum.getCompilationCommand(workspacePath, this.sourceFileName);
+        String compilationInfoFilePath = workspacePath + "/" + this.compilationInfoFileName;
+        return this.compile(language, compilationCommand, compilationInfoFilePath);
     }
 }

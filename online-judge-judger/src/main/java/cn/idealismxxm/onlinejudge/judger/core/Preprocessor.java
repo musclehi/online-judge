@@ -84,7 +84,7 @@ public class Preprocessor {
      * @param source        源代码
      */
     private void createSourceFile(String workspacePath, Integer language, String source) {
-        String suffix = Objects.requireNonNull(LanguageEnum.getLanguageEnumByCode(language)).getSuffix();
+        String suffix = Objects.requireNonNull(LanguageEnum.getLanguageEnumByCode(language)).getSourceFileSuffix();
         String sourceFilePath = workspacePath + "/" + this.sourceFileName + suffix;
 
         try (FileOutputStream sourceStream = new FileOutputStream(new File(sourceFilePath))) {

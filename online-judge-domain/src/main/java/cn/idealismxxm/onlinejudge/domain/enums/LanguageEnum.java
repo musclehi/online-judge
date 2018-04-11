@@ -7,10 +7,9 @@ package cn.idealismxxm.onlinejudge.domain.enums;
  * @date 2018/4/3
  */
 public enum LanguageEnum {
-    // TODO 编译命令输出目录需要配置
-    C(1, "C", ".c", "gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 %s -lm"),
-    C_PLUS_PLUS(2, "C++", ".cpp", "g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 %s -lm"),
-    JAVA(3, "Java", ".java", "javac %s -d -encoding UTF8"),
+    C(1, "C", ".c", ".o", "gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 %s -lm -o %s"),
+    C_PLUS_PLUS(2, "C++", ".cpp", ".o", "g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 %s -lm -o %s"),
+    JAVA(3, "Java", ".java", ".class", "javac %s -d -encoding UTF8"),
     ;
 
     /**
@@ -24,19 +23,25 @@ public enum LanguageEnum {
     private String description;
 
     /**
-     * 源代码后缀
+     * 源代码文件后缀
      */
-    private String suffix;
+    private String sourceFileSuffix;
+
+    /**
+     * 编译后文件后缀
+     */
+    private String targetFileSuffix;
 
     /**
      * 编译命令
      */
     private String compilationCommand;
 
-    LanguageEnum(Integer code, String description, String suffix, String compilationCommand) {
+    LanguageEnum(Integer code, String description, String sourceFileSuffix, String targetFileSuffix, String compilationCommand) {
         this.code = code;
         this.description = description;
-        this.suffix = suffix;
+        this.sourceFileSuffix = sourceFileSuffix;
+        this.targetFileSuffix = targetFileSuffix;
         this.compilationCommand = compilationCommand;
     }
 
@@ -48,12 +53,25 @@ public enum LanguageEnum {
         return description;
     }
 
-    public String getSuffix() {
-        return suffix;
+    public String getSourceFileSuffix() {
+        return sourceFileSuffix;
     }
 
-    public String getCompilationCommand(String sourceFilePath) {
-        return String.format(compilationCommand, sourceFilePath);
+    public String getTargetFileSuffix() {
+        return targetFileSuffix;
+    }
+
+    public String getCompilationCommand(String workspacePath, String sourceFileName) {
+        String sourceFilePath = workspacePath + "/" + sourceFileName + this.getSourceFileSuffix();
+        // Java 只需要指定目录
+        if(this == JAVA) {
+            return String.format(compilationCommand, sourceFilePath, workspacePath);
+        }
+        else {
+            String targetFilePath = workspacePath + "/" + sourceFileName + this.getTargetFileSuffix();
+            return String.format(compilationCommand, sourceFilePath, targetFilePath);
+        }
+
     }
 
     /**
