@@ -114,7 +114,7 @@ public class Preprocessor {
                 testCaseInputStream.close();
 
                 // 创建测试用例输出文件
-                String testCaseOutputFilePath = workspacePath + "/" + this.testCaseFileNamePrefix + index + this.testCaseInputFileNameSuffix;
+                String testCaseOutputFilePath = workspacePath + "/" + this.testCaseFileNamePrefix + index + this.testCaseOutputFileNameSuffix;
                 FileOutputStream testCaseOutputStream = new FileOutputStream(new File(testCaseOutputFilePath));
                 testCaseOutputStream.write(testCase.getOutput().getBytes());
                 testCaseOutputStream.close();

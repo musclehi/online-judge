@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
+ * spring 上下文工具
+ *
  * @author idealism
  * @date 2018/3/29
  */
@@ -45,7 +47,7 @@ public class SpringContextUtil implements ApplicationContextAware {
      * 通过class获取Bean.
      *
      * @param clazz bean class
-     * @param <T> 类型
+     * @param <T>   类型
      * @return bean
      */
     public static <T> T getBean(Class<T> clazz) {
@@ -55,9 +57,9 @@ public class SpringContextUtil implements ApplicationContextAware {
     /**
      * 通过name,以及Clazz返回指定的Bean
      *
-     * @param name bean 名称
+     * @param name  bean 名称
      * @param clazz bean class
-     * @param <T> 类型
+     * @param <T>   类型
      * @return bean
      */
     public static <T> T getBean(String name, Class<T> clazz) {

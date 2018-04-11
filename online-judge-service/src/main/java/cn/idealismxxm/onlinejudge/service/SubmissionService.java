@@ -24,4 +24,12 @@ public interface SubmissionService {
      * @return 提交记录的id
      */
     Integer submit(Submission submission);
+
+    /**
+     * 更新提交记录
+     *
+     * @param submission 提交记录
+     * @return true / false
+     */
+    Boolean modifySubmission(Submission submission);
 }

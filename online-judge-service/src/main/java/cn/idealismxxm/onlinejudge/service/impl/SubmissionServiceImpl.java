@@ -94,4 +94,19 @@ public class SubmissionServiceImpl implements SubmissionService {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
         }
     }
+
+    @Override
+    public Boolean modifySubmission(Submission submission) {
+        int updatedRow = 0;
+        try{
+            updatedRow = submissionDao.updateNonEmptySubmissionById(submission);
+        } catch (Exception e) {
+            LOGGER.error("#modifySubmission error, submission: {}", JsonUtil.objectToJson(submission), e);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+        }
+        if (updatedRow != 1) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DATA_SAVE_ERROR);
+        }
+        return true;
+    }
 }

@@ -1,15 +1,16 @@
 package cn.idealismxxm.onlinejudge.judger.core;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
-import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
-import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
+import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
+import cn.idealismxxm.onlinejudge.domain.enums.ResultEnum;
+import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
+import cn.idealismxxm.onlinejudge.service.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.File;
 
 /**
  * 调度器
@@ -24,7 +25,13 @@ public class Dispatcher {
     private static Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
     @Resource
+    private EventHandler eventHandler;
+
+    @Resource
     private Preprocessor preprocessor;
+
+    @Resource
+    private SubmissionService submissionService;
 
     @Resource
     private Compiler compiler;
@@ -41,18 +48,31 @@ public class Dispatcher {
      * @param submission 提交记录
      */
     public void startJudge(Submission submission) {
-        String workspacePath = basePath + "/" + workspacePrefix + submission.getId();
+        try {
+            String workspacePath = basePath + "/" + workspacePrefix + submission.getId();
 
-        // 1. 预处理
-        preprocessor.doPreprocess(workspacePath, submission);
+            // 1. 预处理
+            preprocessor.doPreprocess(workspacePath, submission);
 
-        // 2. 编译
-        Integer result = compiler.doCompile(submission.getLanguage(), workspacePath);
+            // 2. 编译
+            Integer compilationResult = compiler.doCompile(submission.getLanguage(), workspacePath);
+            eventHandler.onCompileFinished(submission, compilationResult, workspacePath);
+            // 编译失败，则结束本次评测
+            if (!CommonConstant.COMPILATION_SUCCESS.equals(compilationResult)) {
+                return;
+            }
 
-        // 3. 运行
+            // 3. 运行
 
-        // 4. 结果分析
+            // 4. 结果分析
+        } catch (Exception e) {
+            LOGGER.error("#startJudge error, submission: {}", JsonUtil.objectToJson(submission), e);
+            // 更新该提交记录的结果
+            Submission newSubmission = new Submission();
+            newSubmission.setId(submission.getId());
+            newSubmission.setResult(ResultEnum.SYSTEM_ERROR.getCode());
+
+            submissionService.modifySubmission(newSubmission);
+        }
     }
-
-
 }

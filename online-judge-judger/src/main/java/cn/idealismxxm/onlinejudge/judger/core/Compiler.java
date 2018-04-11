@@ -40,6 +40,13 @@ public class Compiler {
         }
     }
 
+    /**
+     * 进行编译
+     *
+     * @param language      源代码语言
+     * @param workspacePath 工作空间路径
+     * @return 编译结果
+     */
     public Integer doCompile(Integer language, String workspacePath) {
         LanguageEnum languageEnum = Objects.requireNonNull(LanguageEnum.getLanguageEnumByCode(language));
         String compilationCommand = languageEnum.getCompilationCommand(workspacePath, this.sourceFileName);

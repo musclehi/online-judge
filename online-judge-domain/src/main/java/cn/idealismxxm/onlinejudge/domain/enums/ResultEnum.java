@@ -10,8 +10,10 @@ public enum ResultEnum {
     QUEUING(1, "Queuing"),
     JUDGING(2, "Judging"),
     ACCEPTED(3, "Accepted"),
-    TIME_LIMIT_EXCEED(4, "TimeLimitExceed"),
-    MEMORY_LIMIT_EXCEED(5, "MemoryLimitExceed"),
+    TIME_LIMIT_EXCEED(4, "Time Limit Exceed"),
+    MEMORY_LIMIT_EXCEED(5, "Memory Limit Exceed"),
+    COMPILATION_ERROR(6, "Compilation Error"),
+    SYSTEM_ERROR(99, "System Error"),
     ;
 
     /**
