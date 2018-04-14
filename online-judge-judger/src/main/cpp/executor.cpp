@@ -40,6 +40,7 @@
 #include "okcalls.h"
 #include "executor.h"
 
+#define STD_KB 1024
 #define STD_MB 1048576
 #define STD_T_LIM 2
 #define STD_F_LIM (STD_MB<<5)
@@ -86,7 +87,7 @@ const static int DEBUG = 0;
 void execute(const int& language, const char* workspacePath,
             const char* inputFilePath, const char* outputFilePath,
             const char* userOutputFilePath, const char* errorFilePath,
-            const int& timeLimit, int& usedTime, const int& memoryLimit, int& topMemory);
+            const int& timeLimit, int& usedTime, const int& memoryLimit, int& topMemory, int& result);
 
 JNIEXPORT jstring JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Executor_execute
     (JNIEnv* jniEnv, jobject selfReference, jint jlanguage, jstring jworkspacePath, jstring jinputFilePath, jstring joutputFilePath, jstring juserOutputFilePath, jstring jerrorFilePath, jint jtimeLimit, jint jmemoryLimit) {
@@ -105,12 +106,12 @@ JNIEXPORT jstring JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Executor_e
 
     execute(language, workspacePath, inputFilePath, outputFilePath,
             userOutputFilePath, errorFilePath, timeLimit,
-            usedTime, memoryLimit, topMemory);
+            usedTime, memoryLimit, topMemory, result);
 
     std::string resultJson = "{";
-    resultJson += "\"result\":" + result;
-    resultJson += ",\"usedTime\":" + usedTime;
-    resultJson += ",\"topMemory\":" + topMemory;
+    resultJson += "\"result\":" + std::to_string(result);
+    resultJson += ",\"usedTime\":" + std::to_string(usedTime);
+    resultJson += ",\"topMemory\":" + std::to_string(topMemory / STD_KB);
     resultJson += "}";
 
     return jniEnv -> NewStringUTF(resultJson.c_str());
@@ -190,8 +191,8 @@ void runSolution(const int& language, const char* workspacePath, const char* inp
 	LIM.rlim_max = STD_MB << 6;
 	setrlimit(RLIMIT_STACK, &LIM);
 	// set the memory
-	LIM.rlim_cur = STD_MB * memoryLimit / 2 * 3;
-	LIM.rlim_max = STD_MB * memoryLimit * 2;
+	LIM.rlim_cur = STD_KB * memoryLimit / 2 * 3;
+	LIM.rlim_max = STD_KB * memoryLimit * 2;
 	if (language == C || language == CPP) {
 		setrlimit(RLIMIT_AS, &LIM);
     }
@@ -199,17 +200,20 @@ void runSolution(const int& language, const char* workspacePath, const char* inp
 	switch (language) {
 	case C:
 	case CPP:
-		execl("./Main", "./Main", (char *) NULL);
+		execl("./Main.o", "./Main.o", (char *) NULL);
 		break;
 	case JAVA:
 	    char* java_xmx = new char[BUFFER_SIZE];
-        sprintf(java_xmx, "-Xmx%dM", memoryLimit);
+        sprintf(java_xmx, "-Xmx%dM", memoryLimit / STD_KB);
 		execl("java", "java", java_xmx,
 		        "-Djava.security.manager",
-				"-Djava.security.policy=./java.policy", "Main", (char *) NULL);
+				"-Djava.security.policy=./java.policy", "Main.class", (char *) NULL);
 		break;
 	}
 	fflush(stderr);
+	freopen("/dev/tty", "r", stdin);
+    freopen("/dev/tty", "w", stdout);
+    freopen("/dev/tty", "w", stderr);
 }
 
 int get_proc_status(int pid, const char* mark) {
@@ -285,7 +289,7 @@ void watchSolution(int pidApp, int& ACflag, const char* userOutputFilePath,
 		if (tempMemory > topMemory) {
 			topMemory = tempMemory;
         }
-		if (topMemory > memoryLimit * STD_MB) {
+		if (topMemory > memoryLimit * STD_KB) {
 			if (DEBUG) {
 				printf("out of memory %d\n", topMemory);
             }
@@ -347,7 +351,7 @@ void watchSolution(int pidApp, int& ACflag, const char* userOutputFilePath,
 				default:
 					ACflag = RUNTIME_ERROR;
 				}
-				fprintf(stderr, strsignal(exitcode));
+				fprintf(stderr, "%s\n", strsignal(exitcode));
 			}
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 			break;
@@ -381,7 +385,7 @@ void watchSolution(int pidApp, int& ACflag, const char* userOutputFilePath,
 				default:
 					ACflag = RUNTIME_ERROR;
 				}
-				fprintf(stderr, strsignal(sig));
+				fprintf(stderr, "%s\n", strsignal(sig));
 			}
 			break;
 		}
@@ -406,7 +410,7 @@ void watchSolution(int pidApp, int& ACflag, const char* userOutputFilePath,
                     "if you are admin and you don't know what to do ,\n"
                     "chinese explaination can be found on https://zhuanlan.zhihu.com/p/24498599\n",
                     "%d", call_id);
-			fprintf(stderr, error);
+			fprintf(stderr, "%s\n", error);
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 		}
 
@@ -421,18 +425,18 @@ void watchSolution(int pidApp, int& ACflag, const char* userOutputFilePath,
 void execute(const int& language, const char* workspacePath,
             const char* inputFilePath, const char* outputFilePath,
             const char* userOutputFilePath, const char* errorFilePath,
-            const int& timeLimit, int& usedTime, const int& memoryLimit, int& topMemory) {
+            const int& timeLimit, int& usedTime, const int& memoryLimit, int& topMemory, int& result) {
     initSyscallsLimits(language);
 
     int pidApp = fork();
-    int ACflag = ACCEPTED;
 
     // 如果是子进程，则运行用户程序
     if (pidApp == 0) {
         runSolution(language, workspacePath, inputFilePath, userOutputFilePath, errorFilePath, timeLimit, usedTime, memoryLimit);
     } else {
+        result = ACCEPTED;
         // 父进程监控子进程运行
-        watchSolution(pidApp, ACflag, userOutputFilePath, outputFilePath, errorFilePath,
+        watchSolution(pidApp, result, userOutputFilePath, outputFilePath, errorFilePath,
                 language, topMemory, memoryLimit, usedTime, timeLimit, workspacePath);
     }
 }
