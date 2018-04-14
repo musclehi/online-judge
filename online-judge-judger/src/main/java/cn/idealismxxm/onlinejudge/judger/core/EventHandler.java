@@ -2,6 +2,7 @@ package cn.idealismxxm.onlinejudge.judger.core;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
+import cn.idealismxxm.onlinejudge.domain.enums.ExtensionKeyEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ResultEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
@@ -72,7 +73,7 @@ public class EventHandler {
                 newSubmission.setResult(ResultEnum.COMPILATION_ERROR.getCode());
 
                 Map<String, String> extension= JsonUtil.jsonToMap(submission.getExtension(), String.class, String.class);
-                extension.put(CommonConstant.EXTENSION_COMPILATION_INFO, compilationInfo);
+                extension.put(ExtensionKeyEnum.COMPILATION_INFO.getKey(), compilationInfo);
                 newSubmission.setExtension(JsonUtil.objectToJson(extension));
 
                 // 更新数据库

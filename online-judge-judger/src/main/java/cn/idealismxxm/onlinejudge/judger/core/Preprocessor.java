@@ -49,8 +49,9 @@ public class Preprocessor {
      *
      * @param workspacePath 评测目录路径
      * @param submission    提交记录
+     * @return 测试数据个数
      */
-    public void doPreprocess(String workspacePath, Submission submission) {
+    public Integer doPreprocess(String workspacePath, Submission submission) {
         // 1. 创建评测目录
         this.createWorkspace(workspacePath);
 
@@ -58,7 +59,7 @@ public class Preprocessor {
         this.createSourceFile(workspacePath, submission.getLanguage(), submission.getSource());
 
         // 3. 创建测试用例文件
-        this.createTestCaseFile(workspacePath, submission.getProblemId());
+        return this.createTestCaseFile(workspacePath, submission.getProblemId());
     }
 
     /**
@@ -101,7 +102,7 @@ public class Preprocessor {
      * @param workspacePath 本次评测路径
      * @param problemId     题目id
      */
-    private void createTestCaseFile(String workspacePath, Integer problemId) {
+    private Integer createTestCaseFile(String workspacePath, Integer problemId) {
         // 获取测试用例
         List<TestCase> testCases = testCaseService.listTestCaseByProblemId(problemId);
         int index = 0;
@@ -125,5 +126,6 @@ public class Preprocessor {
             LOGGER.error("#createTestCaseFile error, workspacePath: {}, problemId: {}", workspacePath, problemId);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.FILE_WRITE_ERROR, e);
         }
+        return testCases.size();
     }
 }

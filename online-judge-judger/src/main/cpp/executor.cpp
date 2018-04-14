@@ -26,10 +26,48 @@
  * along with HUSTOJ. if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <sys/ptrace.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/user.h>
+#include <sys/wait.h>
+#include <sys/resource.h>
 #include <unistd.h>
 
-#define STD_MB 1048576LL
+#include "okcalls.h"
+#include "executor.h"
+
+#define STD_MB 1048576
+#define STD_T_LIM 2
+#define STD_F_LIM (STD_MB<<5)
+#define STD_M_LIM (STD_MB<<7)
+#define BUFFER_SIZE 512
+
+/*copy from ZOJ
+ http://code.google.com/p/zoj/source/browse/trunk/judge_client/client/tracer.cc?spec=svn367&r=367#39
+ */
+#ifdef __i386
+#define REG_SYSCALL orig_eax
+#define REG_RET eax
+#define REG_ARG0 ebx
+#define REG_ARG1 ecx
+#else
+#define REG_SYSCALL orig_rax
+#define REG_RET rax
+#define REG_ARG0 rdi
+#define REG_ARG1 rsi
+#endif
+
+enum ResultEnum {
+    ACCEPTED            = 3,
+    TIME_LIMIT_EXCEED   = 5,
+    MEMORY_LIMIT_EXCEED = 6,
+    OUTPUT_LIMIT_EXCEED = 7,
+    RUNTIME_ERROR       = 8
+};
 
 enum LanguageEnum {
     C    = 1,
@@ -41,51 +79,42 @@ const int call_array_size = 512;
 unsigned int call_id = 0;
 unsigned int call_counter[call_array_size] = { 0 };
 
-void initSyscallsLimits(int language);
+const static int use_ptrace = 1;
+const static double cpu_compensation = 1.0;
+const static int DEBUG = 0;
 
-void runSolution(const int& language, const char* workspacePath, const char* inputFilePath, const char* userOutputFilePath, const char* errorFilePath, const int& timeLimit, int& usedTime, const int& memoryLimit);
-
-int execute(const int& language, const char* workspacePath,
+void execute(const int& language, const char* workspacePath,
             const char* inputFilePath, const char* outputFilePath,
             const char* userOutputFilePath, const char* errorFilePath,
-            const int& timeLimit, int& usedTime, const int& memoryLimit) {
-    initSyscallsLimits(language);
+            const int& timeLimit, int& usedTime, const int& memoryLimit, int& topMemory);
 
-    int pidApp = fork();
+JNIEXPORT jstring JNICALL Java_cn_idealismxxm_onlinejudge_judger_core_Executor_execute
+    (JNIEnv* jniEnv, jobject selfReference, jint jlanguage, jstring jworkspacePath, jstring jinputFilePath, jstring joutputFilePath, jstring juserOutputFilePath, jstring jerrorFilePath, jint jtimeLimit, jint jmemoryLimit) {
+    int language = jlanguage;
+    const char* workspacePath = jniEnv -> GetStringUTFChars(jworkspacePath, 0);
+    const char* inputFilePath = jniEnv -> GetStringUTFChars(jinputFilePath, 0);
+    const char* outputFilePath = jniEnv -> GetStringUTFChars(joutputFilePath, 0);
+    const char* userOutputFilePath = jniEnv -> GetStringUTFChars(juserOutputFilePath, 0);
+    const char* errorFilePath = jniEnv -> GetStringUTFChars(jerrorFilePath, 0);
+    int timeLimit = jtimeLimit;
+    int memoryLimit = jmemoryLimit;
 
-    // 如果是子进程，则运行用户程序
-    if (pidApp == 0) {
-        runSolution(language, workspacePath, inputFilePath, userOutputFilePath, errorFilePath, timeLimit, usedTime, memoryLimit);
-    } else {
-        watchSolution(pidApp, ACflg, userOutputFilePath, outputFilePath, errorFilePath,
-                solution_id, language, topmemory, memoryLimit, usedTime, timeLimit, workspacePath);
-        if (use_max_time) {
-            max_case_time = usedTime > max_case_time ? usedTime : max_case_time;
-            usedTime = 0;
-        }
-    }
+    int result = ACCEPTED;
+    int usedTime = 0;
+    int topMemory = 0;
 
-	if (ACflg == OJ_AC && PEflg == OJ_PE)
-		ACflg = OJ_PE;
-	if (sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)) { //bash don't supported
-		sim = get_sim(solution_id, lang, p_id, sim_s_id);
-	} else {
-		sim = 0;
-	}
-	if (use_max_time) {
-		usedTime = max_case_time;
-	}
-	if (finalACflg == OJ_TL ) {
-		usedTime = timeLimit * 1000;
-		if (DEBUG) {
-            printf("usedTime:%d\n",usedTime);
-        }
-	}
+    execute(language, workspacePath, inputFilePath, outputFilePath,
+            userOutputFilePath, errorFilePath, timeLimit,
+            usedTime, memoryLimit, topMemory);
 
-	closedir(dp);
-	return 0;
+    std::string resultJson = "{";
+    resultJson += "\"result\":" + result;
+    resultJson += ",\"usedTime\":" + usedTime;
+    resultJson += ",\"topMemory\":" + topMemory;
+    resultJson += "}";
+
+    return jniEnv -> NewStringUTF(resultJson.c_str());
 }
-
 
 void initSyscallsLimits(int language) {
  	memset(call_counter, 0, sizeof(call_counter));
@@ -94,8 +123,9 @@ void initSyscallsLimits(int language) {
  			call_counter[LANG_CV[i]] = HOJ_MAX_LIMIT;
  		}
  	} else if (language == JAVA) { // Java
- 		for (i = 0; i==0||LANG_JV[i]; i++)
+ 		for (int i = 0; i == 0 || LANG_JV[i] != 0; ++i) {
  			call_counter[LANG_JV[i]] = HOJ_MAX_LIMIT;
+ 		}
  	}
  }
 
@@ -133,7 +163,7 @@ void runSolution(const int& language, const char* workspacePath, const char* inp
 	// set the limit
 	struct rlimit LIM; // time limit, file limit& memory limit
 	// time limit
-    LIM.rlim_cur = (timeLimit / cpu_compensation - usedTime / 1000) + 1;
+    LIM.rlim_cur = (timeLimit / cpu_compensation - usedTime) + 1000;
 	LIM.rlim_max = LIM.rlim_cur;
 
 	setrlimit(RLIMIT_CPU, &LIM);
@@ -166,12 +196,13 @@ void runSolution(const int& language, const char* workspacePath, const char* inp
 		setrlimit(RLIMIT_AS, &LIM);
     }
 
-	switch (lang) {
+	switch (language) {
 	case C:
 	case CPP:
 		execl("./Main", "./Main", (char *) NULL);
 		break;
 	case JAVA:
+	    char* java_xmx = new char[BUFFER_SIZE];
         sprintf(java_xmx, "-Xmx%dM", memoryLimit);
 		execl("java", "java", java_xmx,
 		        "-Djava.security.manager",
@@ -179,7 +210,6 @@ void runSolution(const int& language, const char* workspacePath, const char* inp
 		break;
 	}
 	fflush(stderr);
-	exit(0);
 }
 
 int get_proc_status(int pid, const char* mark) {
@@ -224,10 +254,10 @@ long get_file_size(const char* filename) {
 	return (long) f_stat.st_size;
 }
 
-void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
+void watchSolution(int pidApp, int& ACflag, const char* userOutputFilePath,
                    const char* outputFilePath, const char* errorFilePath,
-                   int solution_id, int language, int & topmemory, int memoryLimit,
-                   int & usedTime, int timeLimit, const char* workspacePath) {
+                   const int& language, int& topMemory, int memoryLimit,
+                   int& usedTime, int timeLimit, const char* workspacePath) {
 	// parent
 	int tempMemory=0;
 
@@ -248,19 +278,20 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 
         //jvm gc ask VM before need,so used kernel page fault times and page size
 		if (language == JAVA) {
-			tempmemory = get_page_fault_mem(ruse, pidApp);
+			tempMemory = get_page_fault_mem(ruse, pidApp);
 		} else {        //other use VmPeak
-			tempmemory = get_proc_status(pidApp, "VmPeak:") << 10;
+			tempMemory = get_proc_status(pidApp, "VmPeak:") << 10;
 		}
-		if (tempmemory > topmemory) {
-			topmemory = tempmemory;
+		if (tempMemory > topMemory) {
+			topMemory = tempMemory;
         }
-		if (topmemory > memoryLimit * STD_MB) {
+		if (topMemory > memoryLimit * STD_MB) {
 			if (DEBUG) {
-				printf("out of memory %d\n", topmemory);
+				printf("out of memory %d\n", topMemory);
             }
-			if (ACflg == OJ_AC)
-				ACflg = OJ_ML;
+			if (ACflag == ACCEPTED) {
+				ACflag = MEMORY_LIMIT_EXCEED;
+			}
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 			break;
 		}
@@ -270,13 +301,13 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 			break;
 		}
 		if (get_file_size("error.out")) {
-			ACflg = OJ_RE;
+			ACflag = RUNTIME_ERROR;
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 			break;
 		}
 
 		if (get_file_size(userOutputFilePath) > get_file_size(outputFilePath) * 2 + 1024) {
-			ACflg = OJ_OL;
+			ACflag = OUTPUT_LIMIT_EXCEED;
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 			break;
 		}
@@ -294,7 +325,7 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 				printf("status>>8=%d\n", exitcode);
 			}
 
-			if (ACflg == OJ_AC) {
+			if (ACflag == ACCEPTED) {
 				switch (exitcode) {
 				case SIGCHLD:
 				case SIGALRM:
@@ -304,19 +335,19 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 					}
 				case SIGKILL:
 				case SIGXCPU:
-					ACflg = OJ_TL;
-					usedtime = timeLimit * 1000;
+					ACflag = TIME_LIMIT_EXCEED;
+					usedTime = timeLimit;
 					if(DEBUG) {
-                        printf("TLE:%d\n",usedtime);
+                        printf("TLE:%d\n",usedTime);
 					}
 					break;
 				case SIGXFSZ:
-					ACflg = OJ_OL;
+					ACflag = OUTPUT_LIMIT_EXCEED;
 					break;
 				default:
-					ACflg = OJ_RE;
+					ACflag = RUNTIME_ERROR;
 				}
-				print_runtimeerror(strsignal(exitcode));
+				fprintf(stderr, strsignal(exitcode));
 			}
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 			break;
@@ -335,23 +366,22 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 				printf("WTERMSIG=%d\n", sig);
 				psignal(sig, NULL);
 			}
-			if (ACflg == OJ_AC) {
+			if (ACflag == ACCEPTED) {
 				switch (sig) {
 				case SIGCHLD:
 				case SIGALRM:
 					alarm(0);
 				case SIGKILL:
 				case SIGXCPU:
-					ACflg = OJ_TL;
+					ACflag = TIME_LIMIT_EXCEED;
 					break;
 				case SIGXFSZ:
-					ACflg = OJ_OL;
+					ACflag = OUTPUT_LIMIT_EXCEED;
 					break;
-
 				default:
-					ACflg = OJ_RE;
+					ACflag = RUNTIME_ERROR;
 				}
-				print_runtimeerror(strsignal(sig));
+				fprintf(stderr, strsignal(sig));
 			}
 			break;
 		}
@@ -362,25 +392,21 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 
 		// check the system calls
 		ptrace(PTRACE_GETREGS, pidApp, NULL, &reg);
-		call_id=(unsigned int)reg.REG_SYSCALL % call_array_size;
+		call_id = (unsigned int) reg.REG_SYSCALL % call_array_size;
 		if (call_counter[call_id] ){
 			//call_counter[reg.REG_SYSCALL]--;
-		} else if (record_call) {
-			call_counter[call_id] = 1;
 		} //do not limit JVM syscall for using different JVM
 		else {
-			ACflg = OJ_RE;
+			ACflag = RUNTIME_ERROR;
 			char error[BUFFER_SIZE];
 			sprintf(error,
-                    "[ERROR] A Not allowed system call: runid:%d CALLID:%u\n"
+                    "[ERROR] A Not allowed system call: submissionId: %s, CALLID:%u\n"
                     "TO FIX THIS , ask admin to add the CALLID into corresponding LANG_XXV[] located at okcalls32/64.h ,\n"
                     "and recompile judge_client. \n"
                     "if you are admin and you don't know what to do ,\n"
                     "chinese explaination can be found on https://zhuanlan.zhihu.com/p/24498599\n",
-                    solution_id, call_id);
-
-			write_log(error);
-			print_runtimeerror(error);
+                    "%d", call_id);
+			fprintf(stderr, error);
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 		}
 
@@ -388,6 +414,25 @@ void watchSolution(int pidApp, int& ACflg, const char* userOutputFilePath,
 		ptrace(PTRACE_SYSCALL, pidApp, NULL, NULL);
 		first = false;
 	}
-	usedtime += (ruse.ru_utime.tv_sec * 1000 + ruse.ru_utime.tv_usec / 1000) * cpu_compensation;
-	usedtime += (ruse.ru_stime.tv_sec * 1000 + ruse.ru_stime.tv_usec / 1000) * cpu_compensation;
+	usedTime += (ruse.ru_utime.tv_sec * 1000 + ruse.ru_utime.tv_usec / 1000) * cpu_compensation;
+	usedTime += (ruse.ru_stime.tv_sec * 1000 + ruse.ru_stime.tv_usec / 1000) * cpu_compensation;
+}
+
+void execute(const int& language, const char* workspacePath,
+            const char* inputFilePath, const char* outputFilePath,
+            const char* userOutputFilePath, const char* errorFilePath,
+            const int& timeLimit, int& usedTime, const int& memoryLimit, int& topMemory) {
+    initSyscallsLimits(language);
+
+    int pidApp = fork();
+    int ACflag = ACCEPTED;
+
+    // 如果是子进程，则运行用户程序
+    if (pidApp == 0) {
+        runSolution(language, workspacePath, inputFilePath, userOutputFilePath, errorFilePath, timeLimit, usedTime, memoryLimit);
+    } else {
+        // 父进程监控子进程运行
+        watchSolution(pidApp, ACflag, userOutputFilePath, outputFilePath, errorFilePath,
+                language, topMemory, memoryLimit, usedTime, timeLimit, workspacePath);
+    }
 }
