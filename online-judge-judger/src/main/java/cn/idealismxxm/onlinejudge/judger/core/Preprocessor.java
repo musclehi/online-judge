@@ -5,6 +5,7 @@ import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.LanguageEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
+import cn.idealismxxm.onlinejudge.domain.util.FileUtil;
 import cn.idealismxxm.onlinejudge.service.TestCaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,28 +54,13 @@ public class Preprocessor {
      */
     public Integer doPreprocess(String workspacePath, Submission submission) {
         // 1. 创建评测目录
-        this.createWorkspace(workspacePath);
+        FileUtil.createFolder(workspacePath);
 
         // 2. 创建代码文件
         this.createSourceFile(workspacePath, submission.getLanguage(), submission.getSource());
 
         // 3. 创建测试用例文件
         return this.createTestCaseFile(workspacePath, submission.getProblemId());
-    }
-
-    /**
-     * 创建评测目录
-     *
-     * @param workspacePath 评测目录路径
-     * @return 创建成功的评测目录
-     */
-    private void createWorkspace(String workspacePath) {
-        File workspace = new File(workspacePath);
-
-        // 如果文件夹不存在且未创建成功，则抛出异常
-        if (!workspace.exists() && !workspace.mkdirs()) {
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.FILE_CREATE_ERROR);
-        }
     }
 
     /**
@@ -110,20 +96,19 @@ public class Preprocessor {
             for (TestCase testCase : testCases) {
                 // 创建测试用例输入文件
                 String testCaseInputFilePath = workspacePath + "/" + this.testCaseFileNamePrefix + index + this.testCaseInputFileNameSuffix;
-                FileOutputStream testCaseInputStream = new FileOutputStream(new File(testCaseInputFilePath));
-                testCaseInputStream.write(testCase.getInput().getBytes());
-                testCaseInputStream.close();
+                FileUtil.writeString(testCaseInputFilePath, testCase.getInput());
 
                 // 创建测试用例输出文件
                 String testCaseOutputFilePath = workspacePath + "/" + this.testCaseFileNamePrefix + index + this.testCaseOutputFileNameSuffix;
-                FileOutputStream testCaseOutputStream = new FileOutputStream(new File(testCaseOutputFilePath));
-                testCaseOutputStream.write(testCase.getOutput().getBytes());
-                testCaseOutputStream.close();
+                FileUtil.writeString(testCaseOutputFilePath, testCase.getOutput());
 
                 ++index;
             }
+        } catch (BusinessException e) {
+            LOGGER.error("#createTestCaseFile error, workspacePath: {}, problemId: {}", workspacePath, problemId, e);
+            throw e;
         } catch (Exception e) {
-            LOGGER.error("#createTestCaseFile error, workspacePath: {}, problemId: {}", workspacePath, problemId);
+            LOGGER.error("#createTestCaseFile error, workspacePath: {}, problemId: {}", workspacePath, problemId, e);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.FILE_WRITE_ERROR, e);
         }
         return testCases.size();

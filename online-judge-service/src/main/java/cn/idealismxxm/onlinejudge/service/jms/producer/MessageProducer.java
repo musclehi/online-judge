@@ -28,7 +28,7 @@ public class MessageProducer {
             jmsTemplate.send(destinationName, session -> session.createTextMessage(text));
         } catch (Exception e) {
             LOGGER.error("#sendMessage error, message: {}", text, e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.MESSAGE_PRODUCE_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.MESSAGE_PRODUCE_ERROR, e);
         }
     }
 }

@@ -15,6 +15,8 @@ public enum ResultEnum {
     MEMORY_LIMIT_EXCEED(6, "Memory Limit Exceed"),
     OUTPUT_LIMIT_EXCEED(7, "Output Limit Exceed"),
     RUNTIME_ERROR(8, "Runtime Error"),
+    PRESENTATION_ERROR(9, "Presentation Error"),
+    WRONG_ANSWER(10, "Wrong Answer"),
     SYSTEM_ERROR(99, "System Error"),
     ;
 

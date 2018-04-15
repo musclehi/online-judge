@@ -50,7 +50,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             submission = submissionDao.selectSubmissionById(submissionId);
         } catch (Exception e) {
             LOGGER.error("#getSubmissionById error, submissionId: {}", submissionId, e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
 
         // 验证数据是否存在
@@ -102,7 +102,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             updatedRow = submissionDao.updateNonEmptySubmissionById(submission);
         } catch (Exception e) {
             LOGGER.error("#modifySubmission error, submission: {}", JsonUtil.objectToJson(submission), e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
         if (updatedRow != 1) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DATA_SAVE_ERROR);

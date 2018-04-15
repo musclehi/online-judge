@@ -70,7 +70,7 @@ public class SubmissionSubmitMessageConsumer implements MessageListener {
             throw e;
         } catch (Exception e) {
             LOGGER.error("#onMessage error, message: {}", JsonUtil.objectToJson(message), e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.MESSAGE_CONSUME_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.MESSAGE_CONSUME_ERROR, e);
         }
     }
 }

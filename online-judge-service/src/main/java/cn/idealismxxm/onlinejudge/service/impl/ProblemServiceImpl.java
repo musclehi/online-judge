@@ -57,7 +57,7 @@ public class ProblemServiceImpl implements ProblemService {
             problem = problemDao.selectProblemById(problemId);
         } catch (Exception e) {
             LOGGER.error("#getProblemById error, problemId: {}", problemId, e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
 
         // 验证数据是否存在
@@ -102,7 +102,7 @@ public class ProblemServiceImpl implements ProblemService {
             return problem.getId();
         } catch (Exception e) {
             LOGGER.error("#addProblem error, problem: {}, description: {}", JsonUtil.objectToJson(problem), JsonUtil.objectToJson(description), e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
     }
 
@@ -140,7 +140,7 @@ public class ProblemServiceImpl implements ProblemService {
             throw e;
         } catch (Exception e) {
             LOGGER.error("#editProblem error, problem: {}, description: {}", JsonUtil.objectToJson(problem), JsonUtil.objectToJson(description), e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
     }
 

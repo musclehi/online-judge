@@ -4,6 +4,7 @@ import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ResultEnum;
+import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
 import cn.idealismxxm.onlinejudge.service.SubmissionService;
@@ -56,6 +57,12 @@ public class Dispatcher {
     @Value("${judger.testCaseFileNamePrefix}")
     private String testCaseFileNamePrefix;
 
+    @Value("${judger.testCaseOutputFileNameSuffix}")
+    private String testCaseOutputFileNameSuffix;
+
+    @Value("${judger.testCaseUserOutputFileNameSuffix}")
+    private String testCaseUserOutputFileNameSuffix;
+
     /**
      * 开始评测
      *
@@ -80,21 +87,35 @@ public class Dispatcher {
             Problem problem = problemService.getProblemById(submission.getProblemId());
 
             int result = ResultEnum.ACCEPTED.getCode();
-            for(int i = 0; i < testCaseNum; ++i) {
+            for (int i = 0; i < testCaseNum && !ResultEnum.WRONG_ANSWER.getCode().equals(result); ++i) {
                 // 获取当前测试数据名
                 String testCaseFileName = this.testCaseFileNamePrefix + i;
+
                 // 3. 运行
                 executor.doExecute(submission.getLanguage(), workspacePath, testCaseFileName, problem.getTimeLimit(), problem.getMemoryLimit());
+
                 // 4. 结果分析
+                String outputFilePath = workspacePath + "/" + testCaseFileName + this.testCaseOutputFileNameSuffix;
+                String userOutputFilePath = workspacePath + "/" + testCaseFileName + this.testCaseUserOutputFileNameSuffix;
+                result = analyzer.doAnalyze(outputFilePath, userOutputFilePath);
             }
+            this.modifySubmissionResult(submission.getId(), result);
         } catch (Exception e) {
             LOGGER.error("#startJudge error, submission: {}", JsonUtil.objectToJson(submission), e);
             // 更新该提交记录的结果
-            Submission newSubmission = new Submission();
-            newSubmission.setId(submission.getId());
-            newSubmission.setResult(ResultEnum.SYSTEM_ERROR.getCode());
-
-            submissionService.modifySubmission(newSubmission);
+            try {
+                this.modifySubmissionResult(submission.getId(), ResultEnum.SYSTEM_ERROR.getCode());
+            } catch (BusinessException be) {
+                LOGGER.error("#modifySubmissionResult error, submissionId: {}, result: {}", submission.getId(), ResultEnum.SYSTEM_ERROR.getCode(), be);
+            }
         }
+    }
+
+    private void modifySubmissionResult(Integer submissionId, Integer result) {
+        Submission newSubmission = new Submission();
+        newSubmission.setId(submissionId);
+        newSubmission.setResult(result);
+
+        submissionService.modifySubmission(newSubmission);
     }
 }

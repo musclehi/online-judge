@@ -41,7 +41,7 @@ public class Executor {
             NativeLibraryLoader.loadLibrary("executor");
         } catch (Exception e) {
             LOGGER.error("#loadLibrary error, libraryName: executor", e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.LIBRARY_LOAD_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.LIBRARY_LOAD_ERROR, e);
         }
     }
 

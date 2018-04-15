@@ -38,7 +38,7 @@ public class DescriptionServiceImpl implements DescriptionService {
             description = descriptionDao.selectDescriptionById(descriptionId);
         } catch (Exception e) {
             LOGGER.error("#getDescriptionById error, descriptionId: {}", descriptionId, e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
 
         // 验证数据是否存在

@@ -41,7 +41,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             testCases = testCaseDao.listTestCaseByProblemId(problemId);
         } catch (Exception e) {
             LOGGER.error("#listTestCaseByProblemId error, problemId: {}", problemId, e);
-            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
 
         // 验证数据是否存在

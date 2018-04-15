@@ -26,7 +26,8 @@ public enum ErrorCodeEnum {
     DATA_SAVE_ERROR("0016", "数据保存异常"),
     FILE_CREATE_ERROR("0017", "文件创建失败"),
     FILE_WRITE_ERROR("0018", "文件写入失败"),
-    LIBRARY_LOAD_ERROR("0019", "库载入失败"),
+    FILE_READ_ERROR("0019", "文件读取失败"),
+    LIBRARY_LOAD_ERROR("0020", "库载入失败"),
     UNKNOWN("9999", "未知错误"),
     ;
 
