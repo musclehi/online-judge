@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.UserDao">
+    <!-- User的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_User_Map" type="cn.idealismxxm.onlinejudge.domain.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+    </resultMap>
+
+    <!-- 数据库中表名为:user的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="user_Column">
+        user.id as id
+        ,user.password as password
+        ,user.nickname as nickname
+        ,user.email as email
+        ,user.username as username
+    </sql>
+
+    <!--获得类名为:User对应的数据库表的数据总行数 -->
+    <select id="getUserRowCount" resultType="java.lang.Long">
+        select count(id) from user
+    </select>
+    <!-- 获得类名为:User对应数据库中表的数据集合 -->
+    <select id="selectUser" resultMap="result_User_Map">
+        select
+        <include refid="user_Column" />
+        from user
+    </select>
+
+    <!-- 获得一个User对象,以参数User对象中不为空的属性作为条件进行查询-->
+    <select id="selectUserByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User" resultMap="result_User_Map">
+        select
+        <include refid="user_Column" />
+        from user
+        <where>
+            <if test="username != null "> and user.username = #{username,jdbcType=VARCHAR}</if>
+            <if test="email != null "> and user.email = #{email,jdbcType=VARCHAR}</if>
+            <if test="nickname != null "> and user.nickname = #{nickname,jdbcType=VARCHAR}</if>
+            <if test="password != null "> and user.password = #{password,jdbcType=VARCHAR}</if>
+            <if test="id != null "> and user.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select>
+
+    <!-- 通过User的id获得对应数据库中表的数据对象-->
+    <select id="selectUserById" parameterType="java.lang.Integer" resultMap="result_User_Map">
+        select
+        <include refid="user_Column" />
+        from user
+        where user.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 将User插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertUser" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
+        insert into user(id,password,nickname,email,username)
+        values(#{id,jdbcType=INTEGER},#{password,jdbcType=VARCHAR},#{nickname,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 将User中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyUser" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="password != null">password,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="email != null">email,</if>
+            <if test="username != null">username,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            <if test="password != null"> #{password,jdbcType=VARCHAR},</if>
+            <if test="nickname != null"> #{nickname,jdbcType=VARCHAR},</if>
+            <if test="email != null"> #{email,jdbcType=VARCHAR},</if>
+            <if test="username != null"> #{username,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+
+    <!-- 将User批量插入到对应数据库的表中-->
+    <insert id="insertUserByBatch" parameterType="ArrayList">
+        insert into user(id,password,nickname,email,username) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=INTEGER},#{item.password,jdbcType=VARCHAR},#{item.nickname,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR},#{item.username,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 通过User的id将数据库表中对应的数据删除-->
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        delete from user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过User的id将User的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateUserById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
+        update user set
+        password=#{password,jdbcType=VARCHAR}
+        ,nickname=#{nickname,jdbcType=VARCHAR}
+        ,email=#{email,jdbcType=VARCHAR}
+        ,username=#{username,jdbcType=VARCHAR}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过User的id将User中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyUserById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
+        update user
+        <set>
+            <if test="password != null">
+                password=#{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                nickname=#{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email=#{email,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                username=#{username,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+</mapper>
