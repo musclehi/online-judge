@@ -1,10 +1,6 @@
 package cn.idealismxxm.onlinejudge.web.controller.test;
 
-import cn.idealismxxm.onlinejudge.domain.entity.Description;
-import cn.idealismxxm.onlinejudge.domain.entity.Problem;
-import cn.idealismxxm.onlinejudge.domain.entity.Submission;
-import cn.idealismxxm.onlinejudge.domain.enums.OnlineJudgeEnum;
-import cn.idealismxxm.onlinejudge.domain.enums.PublicStatusEnum;
+import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,10 +22,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * SubmissionController 测试类
+ * UserController 测试类
  *
  * @author idealism
- * @date 2018/3/27
+ * @date 2018/4/21
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 // 必须加载 mvc 配置文件，否则无法正常处理请求
@@ -38,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Rollback
 @Transactional
 @WebAppConfiguration
-public class SubmissionControllerTest {
+public class UserControllerTest {
     @Resource
     private WebApplicationContext webApplicationContext;
 
@@ -50,13 +46,13 @@ public class SubmissionControllerTest {
     }
 
     @Test
-    public void submitTest() {
-        Submission submission = this.initSubmission();
+    public void signUpTest() {
+        User user = this.initUser();
         try {
-            String responseString = mockMvc.perform(post("/submission/submit")
+            String responseString = mockMvc.perform(post("/user/signUp")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .header("X-Requested-With", "XMLHttpRequest")
-                    .param("submissionJson", JsonUtil.objectToJson(submission))
+                    .param("userJson", JsonUtil.objectToJson(user))
             ).andExpect(status().isOk())
                     .andDo(MockMvcResultHandlers.print())
                     .andReturn().getResponse().getContentAsString();
@@ -68,20 +64,17 @@ public class SubmissionControllerTest {
 
 
     /**
-     * 初始化测试用的提交记录
+     * 初始化测试用的用户实例
      *
-     * @return 提交记录
+     * @return 用户实例
      */
-    private Submission initSubmission() {
-        Submission submission = new Submission();
+    private User initUser() {
+        User user = new User();
 
-        submission.setProblemId(57);
-        submission.setLanguage(1);
-        submission.setUsername("username");
-        submission.setPublicStatus(PublicStatusEnum.PRIVATE.getCode());
-        submission.setSource("源码");
-        submission.setExtension("{}");
-
-        return submission;
+        user.setUsername("admin");
+        user.setNickname("管理员");
+        user.setPassword("password");
+        user.setEmail("admin@163.com");
+        return user;
     }
 }

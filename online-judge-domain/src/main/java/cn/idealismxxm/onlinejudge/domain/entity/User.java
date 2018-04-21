@@ -2,6 +2,7 @@ package cn.idealismxxm.onlinejudge.domain.entity;
 public class User implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     private Integer id;//主键
+    private java.util.Date updatedTime;//更新时间
     private String password;//密码
     private String nickname;//昵称
     private String email;//邮箱
@@ -9,9 +10,10 @@ public class User implements java.io.Serializable {
     public User() {
         super();
     }
-    public User(Integer id,String password,String nickname,String email,String username) {
+    public User(Integer id,java.util.Date updatedTime,String password,String nickname,String email,String username) {
         super();
         this.id = id;
+        this.updatedTime = updatedTime;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
@@ -23,6 +25,14 @@ public class User implements java.io.Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public java.util.Date getUpdatedTime() {
+        return this.updatedTime;
+    }
+
+    public void setUpdatedTime(java.util.Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 
     public String getPassword() {

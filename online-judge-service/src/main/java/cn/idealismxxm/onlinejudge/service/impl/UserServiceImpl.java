@@ -1,61 +1,47 @@
 package cn.idealismxxm.onlinejudge.service.impl;
-import java.util.List;
+
 import cn.idealismxxm.onlinejudge.dao.UserDao;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
+import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
+import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-@Service
-public class UserServiceImpl implements UserService{
-    @Autowired
+
+import javax.annotation.Resource;
+
+/**
+ * 用户相关操作接口实现
+ *
+ * @author idealism
+ * @date 2018/4/21
+ */
+@Service("userService")
+public class UserServiceImpl implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    @Resource
     private UserDao userDao;
-    @Override
-    public long getUserRowCount(){
-        return userDao.getUserRowCount();
-    }
-    @Override
-    public List<User> selectUser(){
-        return userDao.selectUser();
-    }
-    @Override
-    public User selectUserByObj(User obj){
-        return userDao.selectUserByObj(obj);
-    }
-    @Override
-    public User selectUserById(Integer id){
-        return userDao.selectUserById(id);
-    }
-    @Override
-    public int insertUser(User value){
-        return userDao.insertUser(value);
-    }
-    @Override
-    public int insertNonEmptyUser(User value){
-        return userDao.insertNonEmptyUser(value);
-    }
-    @Override
-    public int insertUserByBatch(List<User> value){
-        return userDao.insertUserByBatch(value);
-    }
-    @Override
-    public int deleteUserById(Integer id){
-        return userDao.deleteUserById(id);
-    }
-    @Override
-    public int updateUserById(User enti){
-        return userDao.updateUserById(enti);
-    }
-    @Override
-    public int updateNonEmptyUserById(User enti){
-        return userDao.updateNonEmptyUserById(enti);
-    }
 
-    public UserDao getUserDao() {
-        return this.userDao;
-    }
+    @Override
+    public Integer signUp(User user) {
+        // 1. 参数校验
+        if (user == null || StringUtils.isBlank(user.getUsername()) || StringUtils.isBlank(user.getPassword())
+                || StringUtils.isBlank(user.getEmail()) || !user.getEmail().matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+        // 2. 数据入库
+        try {
+            userDao.insertUser(user);
+            return user.getId();
+        } catch (Exception e) {
+            LOGGER.error("#signUp error, user: {}", JsonUtil.objectToJson(user));
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
+        }
     }
-
 }

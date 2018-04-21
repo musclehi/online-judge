@@ -4,6 +4,7 @@
     <!-- User的resultMap,column是给数据库列起的别名,它对应property类的属性-->
     <resultMap id="result_User_Map" type="cn.idealismxxm.onlinejudge.domain.entity.User">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="updated_time" jdbcType="DATE" property="updatedTime" />
         <result column="password" jdbcType="VARCHAR" property="password" />
         <result column="nickname" jdbcType="VARCHAR" property="nickname" />
         <result column="email" jdbcType="VARCHAR" property="email" />
@@ -13,6 +14,7 @@
     <!-- 数据库中表名为:user的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
     <sql id="user_Column">
         user.id as id
+        ,user.updated_time as updated_time
         ,user.password as password
         ,user.nickname as nickname
         ,user.email as email
@@ -40,6 +42,7 @@
             <if test="email != null "> and user.email = #{email,jdbcType=VARCHAR}</if>
             <if test="nickname != null "> and user.nickname = #{nickname,jdbcType=VARCHAR}</if>
             <if test="password != null "> and user.password = #{password,jdbcType=VARCHAR}</if>
+            <if test="updatedTime != null "> and user.updated_time = #{updatedTime,jdbcType=DATE}</if>
             <if test="id != null "> and user.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select>
@@ -54,16 +57,17 @@
 
     <!-- 将User插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertUser" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
-        insert into user(id,password,nickname,email,username)
-        values(#{id,jdbcType=INTEGER},#{password,jdbcType=VARCHAR},#{nickname,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR})
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
+        insert into user(id,updated_time,password,nickname,email,username)
+        values(#{id,jdbcType=INTEGER},now(),#{password,jdbcType=VARCHAR},#{nickname,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将User中属性值不为null的数据,插入到对应数据库的表中-->
-    <insert id="insertNonEmptyUser" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
+    <insert id="insertNonEmptyUser" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
+            updated_time,
             <if test="password != null">password,</if>
             <if test="nickname != null">nickname,</if>
             <if test="email != null">email,</if>
@@ -71,6 +75,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            now(),
             <if test="password != null"> #{password,jdbcType=VARCHAR},</if>
             <if test="nickname != null"> #{nickname,jdbcType=VARCHAR},</if>
             <if test="email != null"> #{email,jdbcType=VARCHAR},</if>
@@ -80,9 +85,9 @@
 
     <!-- 将User批量插入到对应数据库的表中-->
     <insert id="insertUserByBatch" parameterType="ArrayList">
-        insert into user(id,password,nickname,email,username) values
+        insert into user(id,updated_time,password,nickname,email,username) values
         <foreach collection="list" item="item" index="index" separator="," >
-            (#{item.id,jdbcType=INTEGER},#{item.password,jdbcType=VARCHAR},#{item.nickname,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR},#{item.username,jdbcType=VARCHAR})
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.password,jdbcType=VARCHAR},#{item.nickname,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR},#{item.username,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -95,7 +100,8 @@
     <!-- 通过User的id将User的数据更新到数据库中对应的表,包括值null的数据-->
     <update id="updateUserById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
         update user set
-        password=#{password,jdbcType=VARCHAR}
+        updated_time=#{updatedTime,jdbcType=DATE}
+        ,password=#{password,jdbcType=VARCHAR}
         ,nickname=#{nickname,jdbcType=VARCHAR}
         ,email=#{email,jdbcType=VARCHAR}
         ,username=#{username,jdbcType=VARCHAR}
@@ -106,6 +112,9 @@
     <update id="updateNonEmptyUserById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
         update user
         <set>
+            <if test="updatedTime != null">
+                updated_time=#{updatedTime,jdbcType=DATE},
+            </if>
             <if test="password != null">
                 password=#{password,jdbcType=VARCHAR},
             </if>
