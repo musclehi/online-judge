@@ -131,4 +131,37 @@
         where id=#{id,jdbcType=INTEGER}
     </update>
 
+    <!-- 通过用户名获取用户实例 -->
+    <select id="getUserByUsername" parameterType="java.lang.String" resultMap="result_User_Map">
+        SELECT
+        <include refid="user_Column" />
+        FROM user
+        WHERE username = #{username, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 通过邮箱获取用户实例 -->
+    <select id="getUserByEmail" parameterType="java.lang.String" resultMap="result_User_Map">
+        SELECT
+        <include refid="user_Column" />
+        FROM user
+        WHERE email = #{email, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 通过用户名和密码获取用户实例 -->
+    <select id="getUserByUsernameAndPassword" resultMap="result_User_Map">
+        SELECT
+        <include refid="user_Column" />
+        FROM user
+        WHERE username = #{username, jdbcType=VARCHAR}
+            AND password = #{password, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 通过邮箱和密码获取用户实例 -->
+    <select id="getUserByEmailAndPassword" resultMap="result_User_Map">
+        SELECT
+        <include refid="user_Column" />
+        FROM user
+        WHERE email = #{email, jdbcType=VARCHAR}
+        AND password = #{password, jdbcType=VARCHAR}
+    </select>
 </mapper>

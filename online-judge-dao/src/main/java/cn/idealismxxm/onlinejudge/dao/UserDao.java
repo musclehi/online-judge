@@ -1,5 +1,7 @@
 package cn.idealismxxm.onlinejudge.dao;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 public interface UserDao{
 	/**
@@ -60,4 +62,38 @@ public interface UserDao{
 	 * @return
 	 */
 	int updateNonEmptyUserById(User enti);
+
+	/**
+	 * 通过用户名获取用户实例
+	 *
+	 * @param username 用户名
+	 * @return 用户实例
+	 */
+	User getUserByUsername(String username);
+
+    /**
+     * 通过邮箱获取用户实例
+     *
+     * @param email 邮箱
+     * @return 用户实例
+     */
+    User getUserByEmail(String email);
+
+	/**
+	 * 通过用户名和密码获取用户实例
+	 *
+	 * @param username 用户名
+	 * @param password 密码
+	 * @return 用户实例
+	 */
+	User getUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+
+	/**
+	 * 通过邮箱和密码获取用户实例
+	 *
+	 * @param email    邮箱
+	 * @param password 密码
+	 * @return 用户实例
+	 */
+	User getUserByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 }

@@ -1,6 +1,7 @@
 package cn.idealismxxm.onlinejudge.web.controller.test;
 
 import cn.idealismxxm.onlinejudge.domain.entity.User;
+import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +64,24 @@ public class UserControllerTest {
         }
     }
 
+    @Test
+    public void signInTest() {
+        User user = this.initUser();
+        try {
+            MvcResult result = mockMvc.perform(post("/user/signIn")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("account", user.getUsername())
+                    .param("password", user.getPassword())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn();
+            System.out.println(JsonUtil.objectToJson(result.getRequest().getSession().getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 初始化测试用的用户实例
@@ -73,7 +93,7 @@ public class UserControllerTest {
 
         user.setUsername("admin");
         user.setNickname("管理员");
-        user.setPassword("password");
+        user.setPassword("Pa55word");
         user.setEmail("admin@163.com");
         return user;
     }

@@ -1,7 +1,9 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
 import cn.idealismxxm.onlinejudge.domain.entity.User;
+import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.UserService;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * 用户相关操作
@@ -36,5 +40,39 @@ public class UserController {
         User user = JsonUtil.jsonToObject(userJson, User.class);
         Integer id = userService.signUp(user);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
+    }
+
+    /**
+     * 用户登录
+     *
+     * @param account  用户名或邮箱
+     * @param password 密码
+     * @return 用户的昵称
+     */
+    @ResponseBody
+    @RequestMapping(value = "signIn", method = {RequestMethod.POST})
+    public AjaxResult<String> signIn(String account, String password, HttpServletRequest request) {
+        // 登录状态拒绝登录操作
+        HttpSession session = request.getSession();
+        if (session.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER) != null) {
+            throw BusinessException.buildCustomizedMessageException("您已登录，请先注销后再登录！");
+        }
+
+        // 获取用户实例，并放入session
+        User user = userService.getUserByAccountAndPassword(account, password);
+        session.setAttribute(CommonConstant.SESSION_ATTRIBUTE_USER, user);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), user.getNickname());
+    }
+
+    /**
+     * 用户注销
+     *
+     * @return true
+     */
+    @ResponseBody
+    @RequestMapping(value = "signOut", method = {RequestMethod.POST})
+    public AjaxResult<Boolean> signOut(HttpServletRequest request) {
+        request.getSession().removeAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), true);
     }
 }

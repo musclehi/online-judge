@@ -28,6 +28,8 @@ public enum ErrorCodeEnum {
     FILE_WRITE_ERROR("0018", "文件写入失败"),
     FILE_READ_ERROR("0019", "文件读取失败"),
     LIBRARY_LOAD_ERROR("0020", "库载入失败"),
+    USER_NOT_EXIST("0021", "用户不存在"),
+    USER_NOT_SIGN_IN("0022", "用户未登录"),
     UNKNOWN("9999", "未知错误"),
     ;
 

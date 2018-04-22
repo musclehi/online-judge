@@ -16,4 +16,12 @@ public interface UserService {
      * @return 用户的id
      */
     Integer signUp(User user);
+
+    /**
+     * 通过用户名或邮箱 和 密码获取用户实例
+     * @param account 用户名或邮箱
+     * @param password 密码
+     * @return 用户实例
+     */
+    User getUserByAccountAndPassword(String account, String password);
 }

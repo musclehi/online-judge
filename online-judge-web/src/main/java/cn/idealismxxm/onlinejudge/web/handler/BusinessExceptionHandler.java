@@ -41,7 +41,7 @@ public class BusinessExceptionHandler implements HandlerExceptionResolver {
 
         String header = request.getHeader("X-Requested-With");
         // 3. 处理 ajax 请求
-        if ("XMLHttpRequest".equalsIgnoreCase(header)) {
+        if (header != null && "XMLHttpRequest".equalsIgnoreCase(header)) {
             response.setContentType("application/json;charset=UTF-8");
             PrintWriter printWriter = null;
             try {
