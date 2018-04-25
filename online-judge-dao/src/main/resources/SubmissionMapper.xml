@@ -15,6 +15,7 @@
         <result column="remote_submission_id" jdbcType="INTEGER" property="remoteSubmissionId" />
         <result column="problem_id" jdbcType="INTEGER" property="problemId" />
         <result column="time" jdbcType="INTEGER" property="time" />
+        <result column="visible_status" jdbcType="TINYINT" property="visibleStatus" />
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="remote_account_id" jdbcType="INTEGER" property="remoteAccountId" />
     </resultMap>
@@ -33,6 +34,7 @@
         ,submission.remote_submission_id as remote_submission_id
         ,submission.problem_id as problem_id
         ,submission.time as time
+        ,submission.visible_status as visible_status
         ,submission.username as username
         ,submission.remote_account_id as remote_account_id
     </sql>
@@ -56,6 +58,7 @@
         <where>
             <if test="remoteAccountId != null "> and submission.remote_account_id = #{remoteAccountId,jdbcType=INTEGER}</if>
             <if test="username != null "> and submission.username = #{username,jdbcType=VARCHAR}</if>
+            <if test="visibleStatus != null "> and submission.visible_status = #{visibleStatus,jdbcType=TINYINT}</if>
             <if test="time != null "> and submission.time = #{time,jdbcType=INTEGER}</if>
             <if test="problemId != null "> and submission.problem_id = #{problemId,jdbcType=INTEGER}</if>
             <if test="remoteSubmissionId != null "> and submission.remote_submission_id = #{remoteSubmissionId,jdbcType=INTEGER}</if>
@@ -82,8 +85,8 @@
     <!-- 将Submission插入到对应数据库的表中,包括属性值为null的数据-->
 
     <insert id="insertSubmission" useGeneratedKeys="true" keyProperty="id"  parameterType="cn.idealismxxm.onlinejudge.domain.entity.Submission">
-        insert into submission(id,updated_time,extension,memory,public_status,language,submitted_time,source,result,remote_submission_id,problem_id,time,username,remote_account_id) 
-        values(#{id,jdbcType=INTEGER},now(),#{extension,jdbcType=VARCHAR},#{memory,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{language,jdbcType=INTEGER},now(),#{source,jdbcType=VARCHAR},#{result,jdbcType=TINYINT},#{remoteSubmissionId,jdbcType=INTEGER},#{problemId,jdbcType=INTEGER},#{time,jdbcType=INTEGER},#{username,jdbcType=VARCHAR},#{remoteAccountId,jdbcType=INTEGER})
+        insert into submission(id,updated_time,extension,memory,public_status,language,submitted_time,source,result,remote_submission_id,problem_id,time,visible_status,username,remote_account_id)
+        values(#{id,jdbcType=INTEGER},now(),#{extension,jdbcType=VARCHAR},#{memory,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{language,jdbcType=INTEGER},now(),#{source,jdbcType=VARCHAR},#{result,jdbcType=TINYINT},#{remoteSubmissionId,jdbcType=INTEGER},#{problemId,jdbcType=INTEGER},#{time,jdbcType=INTEGER},#{visibleStatus,jdbcType=TINYINT},#{username,jdbcType=VARCHAR},#{remoteAccountId,jdbcType=INTEGER})
     </insert>
 
     <!-- 将Submission中属性值不为null的数据,插入到对应数据库的表中-->
@@ -102,6 +105,7 @@
             <if test="remoteSubmissionId != null">remote_submission_id,</if>
             <if test="problemId != null">problem_id,</if>
             <if test="time != null">time,</if>
+            <if test="visibleStatus != null">visible_status,</if>
             <if test="username != null">username,</if>
             <if test="remoteAccountId != null">remote_account_id,</if>
         </trim>
@@ -118,6 +122,7 @@
             <if test="remoteSubmissionId != null"> #{remoteSubmissionId,jdbcType=INTEGER},</if>
             <if test="problemId != null"> #{problemId,jdbcType=INTEGER},</if>
             <if test="time != null"> #{time,jdbcType=INTEGER},</if>
+            <if test="visibleStatus != null"> #{visibleStatus,jdbcType=TINYINT},</if>
             <if test="username != null"> #{username,jdbcType=VARCHAR},</if>
             <if test="remoteAccountId != null"> #{remoteAccountId,jdbcType=INTEGER},</if>
         </trim>
@@ -125,9 +130,9 @@
 
     <!-- 将Submission批量插入到对应数据库的表中-->
     <insert id="insertSubmissionByBatch" parameterType="ArrayList">
-        insert into submission(id,updated_time,extension,memory,public_status,language,submitted_time,source,result,remote_submission_id,problem_id,time,username,remote_account_id) values
+        insert into submission(id,updated_time,extension,memory,public_status,language,submitted_time,source,result,remote_submission_id,problem_id,time,visible_status,username,remote_account_id) values
         <foreach collection="list" item="item" index="index" separator="," >
-            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.extension,jdbcType=VARCHAR},#{item.memory,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.language,jdbcType=INTEGER},#{item.submittedTime,jdbcType=DATE},#{item.source,jdbcType=VARCHAR},#{item.result,jdbcType=TINYINT},#{item.remoteSubmissionId,jdbcType=INTEGER},#{item.problemId,jdbcType=INTEGER},#{item.time,jdbcType=INTEGER},#{item.username,jdbcType=VARCHAR},#{item.remoteAccountId,jdbcType=INTEGER})
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.extension,jdbcType=VARCHAR},#{item.memory,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.language,jdbcType=INTEGER},#{item.submittedTime,jdbcType=DATE},#{item.source,jdbcType=VARCHAR},#{item.result,jdbcType=TINYINT},#{item.remoteSubmissionId,jdbcType=INTEGER},#{item.problemId,jdbcType=INTEGER},#{item.time,jdbcType=INTEGER},#{item.visibleStatus,jdbcType=TINYINT},#{item.username,jdbcType=VARCHAR},#{item.remoteAccountId,jdbcType=INTEGER})
         </foreach>
     </insert>
 
@@ -151,6 +156,7 @@
             ,remote_submission_id=#{remoteSubmissionId,jdbcType=INTEGER}
             ,problem_id=#{problemId,jdbcType=INTEGER}
             ,time=#{time,jdbcType=INTEGER}
+            ,visible_status=#{visibleStatus,jdbcType=TINYINT}
             ,username=#{username,jdbcType=VARCHAR}
             ,remote_account_id=#{remoteAccountId,jdbcType=INTEGER}
         where id=#{id,jdbcType=INTEGER}
@@ -192,6 +198,9 @@
             </if>
             <if test="time != null">
                 time=#{time,jdbcType=INTEGER},
+            </if>
+            <if test="visibleStatus != null">
+                visible_status=#{visibleStatus,jdbcType=TINYINT},
             </if>
             <if test="username != null">
                 username=#{username,jdbcType=VARCHAR},

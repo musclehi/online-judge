@@ -13,12 +13,13 @@ public class Submission implements java.io.Serializable {
     private Integer remoteSubmissionId;//原OJ提交id
     private Integer problemId;//题目id
     private Integer time;//运行时间（单位：ms）
+    private Integer visibleStatus;//提交记录可见状态（0：私密，1：全部可见，2：仅比赛内可见）
     private String username;//提交的用户名
     private Integer remoteAccountId;//原OJ提交帐号id
     public Submission() {
         super();
     }
-    public Submission(Integer id,java.util.Date updatedTime,String extension,Integer memory,Integer publicStatus,Integer language,java.util.Date submittedTime,String source,Integer result,Integer remoteSubmissionId,Integer problemId,Integer time,String username,Integer remoteAccountId) {
+    public Submission(Integer id,java.util.Date updatedTime,String extension,Integer memory,Integer publicStatus,Integer language,java.util.Date submittedTime,String source,Integer result,Integer remoteSubmissionId,Integer problemId,Integer time,Integer visibleStatus,String username,Integer remoteAccountId) {
         super();
         this.id = id;
         this.updatedTime = updatedTime;
@@ -32,6 +33,7 @@ public class Submission implements java.io.Serializable {
         this.remoteSubmissionId = remoteSubmissionId;
         this.problemId = problemId;
         this.time = time;
+        this.visibleStatus = visibleStatus;
         this.username = username;
         this.remoteAccountId = remoteAccountId;
     }
@@ -129,6 +131,14 @@ public class Submission implements java.io.Serializable {
 
     public void setTime(Integer time) {
         this.time = time;
+    }
+
+    public Integer getVisibleStatus() {
+        return this.visibleStatus;
+    }
+
+    public void setVisibleStatus(Integer visibleStatus) {
+        this.visibleStatus = visibleStatus;
     }
 
     public String getUsername() {

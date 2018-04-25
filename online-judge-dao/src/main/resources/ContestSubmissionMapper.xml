@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.ContestSubmissionDao">
+    <!-- ContestSubmission的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_ContestSubmission_Map" type="cn.idealismxxm.onlinejudge.domain.entity.ContestSubmission">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="submission_id" jdbcType="INTEGER" property="submissionId" />
+        <result column="problem_id" jdbcType="INTEGER" property="problemId" />
+        <result column="contest_id" jdbcType="INTEGER" property="contestId" />
+    </resultMap>
+
+    <!-- 数据库中表名为:contest_submission的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="contest_submission_Column">
+        contest_submission.id as id
+        ,contest_submission.submission_id as submission_id
+        ,contest_submission.problem_id as problem_id
+        ,contest_submission.contest_id as contest_id
+    </sql>
+
+    <!--获得类名为:ContestSubmission对应的数据库表的数据总行数 -->
+    <select id="getContestSubmissionRowCount" resultType="java.lang.Long">
+        select count(id) from contest_submission
+    </select>
+    <!-- 获得类名为:ContestSubmission对应数据库中表的数据集合 -->
+    <select id="selectContestSubmission" resultMap="result_ContestSubmission_Map">
+        select 
+        <include refid="contest_submission_Column" /> 
+        from contest_submission
+    </select> 
+
+    <!-- 获得一个ContestSubmission对象,以参数ContestSubmission对象中不为空的属性作为条件进行查询-->
+    <select id="selectContestSubmissionByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestSubmission" resultMap="result_ContestSubmission_Map">
+        select 
+            <include refid="contest_submission_Column" /> 
+        from contest_submission
+        <where>
+            <if test="contestId != null "> and contest_submission.contest_id = #{contestId,jdbcType=INTEGER}</if>
+            <if test="problemId != null "> and contest_submission.problem_id = #{problemId,jdbcType=INTEGER}</if>
+            <if test="submissionId != null "> and contest_submission.submission_id = #{submissionId,jdbcType=INTEGER}</if>
+            <if test="id != null "> and contest_submission.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select> 
+
+    <!-- 通过ContestSubmission的id获得对应数据库中表的数据对象-->
+    <select id="selectContestSubmissionById" parameterType="java.lang.Integer" resultMap="result_ContestSubmission_Map">
+        select 
+            <include refid="contest_submission_Column" /> 
+        from contest_submission
+        where contest_submission.id = #{id,jdbcType=INTEGER}
+    </select> 
+
+    <!-- 将ContestSubmission插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertContestSubmission" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestSubmission">
+        insert into contest_submission(id,submission_id,problem_id,contest_id) 
+        values(#{id,jdbcType=INTEGER},#{submissionId,jdbcType=INTEGER},#{problemId,jdbcType=INTEGER},#{contestId,jdbcType=INTEGER})
+    </insert>
+
+    <!-- 将ContestSubmission中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyContestSubmission" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestSubmission">
+        insert into contest_submission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="submissionId != null">submission_id,</if>
+            <if test="problemId != null">problem_id,</if>
+            <if test="contestId != null">contest_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            <if test="submissionId != null"> #{submissionId,jdbcType=INTEGER},</if>
+            <if test="problemId != null"> #{problemId,jdbcType=INTEGER},</if>
+            <if test="contestId != null"> #{contestId,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
+
+    <!-- 将ContestSubmission批量插入到对应数据库的表中-->
+    <insert id="insertContestSubmissionByBatch" parameterType="ArrayList">
+        insert into contest_submission(id,submission_id,problem_id,contest_id) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=INTEGER},#{item.submissionId,jdbcType=INTEGER},#{item.problemId,jdbcType=INTEGER},#{item.contestId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!-- 通过ContestSubmission的id将数据库表中对应的数据删除-->
+    <delete id="deleteContestSubmissionById" parameterType="java.lang.Integer">
+        delete from contest_submission
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过ContestSubmission的id将ContestSubmission的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateContestSubmissionById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestSubmission">
+        update contest_submission set
+            submission_id=#{submissionId,jdbcType=INTEGER}
+            ,problem_id=#{problemId,jdbcType=INTEGER}
+            ,contest_id=#{contestId,jdbcType=INTEGER}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过ContestSubmission的id将ContestSubmission中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyContestSubmissionById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestSubmission">
+        update contest_submission
+        <set>
+            <if test="submissionId != null">
+                submission_id=#{submissionId,jdbcType=INTEGER},
+            </if>
+            <if test="problemId != null">
+                problem_id=#{problemId,jdbcType=INTEGER},
+            </if>
+            <if test="contestId != null">
+                contest_id=#{contestId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+</mapper>

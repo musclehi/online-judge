@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.ContestDao">
+    <!-- Contest的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_Contest_Map" type="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="start_time" jdbcType="DATE" property="startTime" />
+        <result column="problem_ids" jdbcType="VARCHAR" property="problemIds" />
+        <result column="creator" jdbcType="VARCHAR" property="creator" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="end_time" jdbcType="DATE" property="endTime" />
+    </resultMap>
+
+    <!-- 数据库中表名为:contest的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="contest_Column">
+        contest.id as id
+        ,contest.start_time as start_time
+        ,contest.problem_ids as problem_ids
+        ,contest.creator as creator
+        ,contest.name as name
+        ,contest.end_time as end_time
+    </sql>
+
+    <!--获得类名为:Contest对应的数据库表的数据总行数 -->
+    <select id="getContestRowCount" resultType="java.lang.Long">
+        select count(id) from contest
+    </select>
+    <!-- 获得类名为:Contest对应数据库中表的数据集合 -->
+    <select id="selectContest" resultMap="result_Contest_Map">
+        select
+        <include refid="contest_Column" />
+        from contest
+    </select>
+
+    <!-- 获得一个Contest对象,以参数Contest对象中不为空的属性作为条件进行查询-->
+    <select id="selectContestByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest" resultMap="result_Contest_Map">
+        select
+        <include refid="contest_Column" />
+        from contest
+        <where>
+            <if test="endTime != null "> and contest.end_time = #{endTime,jdbcType=DATE}</if>
+            <if test="name != null "> and contest.name = #{name,jdbcType=VARCHAR}</if>
+            <if test="creator != null "> and contest.creator = #{creator,jdbcType=VARCHAR}</if>
+            <if test="problemIds != null "> and contest.problem_ids = #{problemIds,jdbcType=VARCHAR}</if>
+            <if test="startTime != null "> and contest.start_time = #{startTime,jdbcType=DATE}</if>
+            <if test="id != null "> and contest.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select>
+
+    <!-- 通过Contest的id获得对应数据库中表的数据对象-->
+    <select id="selectContestById" parameterType="java.lang.Integer" resultMap="result_Contest_Map">
+        select
+        <include refid="contest_Column" />
+        from contest
+        where contest.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 将Contest插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertContest" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+        insert into contest(id,start_time,problem_ids,creator,name,end_time)
+        values(#{id,jdbcType=INTEGER},#{startTime,jdbcType=DATE},#{problemIds,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{endTime,jdbcType=DATE})
+    </insert>
+
+    <!-- 将Contest中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyContest" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+        insert into contest
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="problemIds != null">problem_ids,</if>
+            <if test="creator != null">creator,</if>
+            <if test="name != null">name,</if>
+            <if test="endTime != null">end_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            <if test="startTime != null"> #{startTime,jdbcType=DATE},</if>
+            <if test="problemIds != null"> #{problemIds,jdbcType=VARCHAR},</if>
+            <if test="creator != null"> #{creator,jdbcType=VARCHAR},</if>
+            <if test="name != null"> #{name,jdbcType=VARCHAR},</if>
+            <if test="endTime != null"> #{endTime,jdbcType=DATE},</if>
+        </trim>
+    </insert>
+
+    <!-- 将Contest批量插入到对应数据库的表中-->
+    <insert id="insertContestByBatch" parameterType="ArrayList">
+        insert into contest(id,start_time,problem_ids,creator,name,end_time) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=INTEGER},#{item.startTime,jdbcType=DATE},#{item.problemIds,jdbcType=VARCHAR},#{item.creator,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.endTime,jdbcType=DATE})
+        </foreach>
+    </insert>
+
+    <!-- 通过Contest的id将数据库表中对应的数据删除-->
+    <delete id="deleteContestById" parameterType="java.lang.Integer">
+        delete from contest
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过Contest的id将Contest的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateContestById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+        update contest set
+        start_time=#{startTime,jdbcType=DATE}
+        ,problem_ids=#{problemIds,jdbcType=VARCHAR}
+        ,creator=#{creator,jdbcType=VARCHAR}
+        ,name=#{name,jdbcType=VARCHAR}
+        ,end_time=#{endTime,jdbcType=DATE}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过Contest的id将Contest中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyContestById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+        update contest
+        <set>
+            <if test="startTime != null">
+                start_time=#{startTime,jdbcType=DATE},
+            </if>
+            <if test="problemIds != null">
+                problem_ids=#{problemIds,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator=#{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name=#{name,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                end_time=#{endTime,jdbcType=DATE},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+</mapper>

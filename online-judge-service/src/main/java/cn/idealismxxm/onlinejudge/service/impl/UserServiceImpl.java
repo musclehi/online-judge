@@ -7,7 +7,6 @@ import cn.idealismxxm.onlinejudge.domain.enums.RegexEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.UserService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
