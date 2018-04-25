@@ -16,4 +16,14 @@ public interface CommonConstant {
      * session 中存储的 attribute 的 键
      */
     String SESSION_ATTRIBUTE_USER = "user";
+
+    /**
+     * 比赛开始时间至少比当前时间晚：5min（单位：ms）
+     */
+    Long CONTEST_MIN_START_INTERVAL = 1000 * 60 * 5L;
+
+    /**
+     * 比赛最短持续时间为：1小时（单位：ms）
+     */
+    Long CONTEST_MIN_DURATION = 1000 * 60 * 60L;
 }

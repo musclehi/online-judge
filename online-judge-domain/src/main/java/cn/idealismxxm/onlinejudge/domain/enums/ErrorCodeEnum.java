@@ -30,6 +30,7 @@ public enum ErrorCodeEnum {
     LIBRARY_LOAD_ERROR("0020", "库载入失败"),
     USER_NOT_EXIST("0021", "用户不存在"),
     USER_NOT_SIGN_IN("0022", "用户未登录"),
+    CONTEST_NOT_EXIST("0023", "比赛不存在"),
     UNKNOWN("9999", "未知错误"),
     ;
 

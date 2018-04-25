@@ -48,13 +48,13 @@
 
     <!-- 将ContestContestant插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertContestContestant" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestContestant">
+    <insert id="insertContestContestant" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestContestant">
         insert into contest_contestant(id,contest_id,username) 
         values(#{id,jdbcType=INTEGER},#{contestId,jdbcType=INTEGER},#{username,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将ContestContestant中属性值不为null的数据,插入到对应数据库的表中-->
-    <insert id="insertNonEmptyContestContestant" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestContestant">
+    <insert id="insertNonEmptyContestContestant" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.ContestContestant">
         insert into contest_contestant
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -103,5 +103,20 @@
         </set>
         where id=#{id,jdbcType=INTEGER}
     </update>
+
+    <!-- 统计contestId下所有username的参赛信息个数 -->
+    <select id="countByContestIdAndUsername" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM contest_contestant
+        WHERE contest_id = #{contestId, jdbcType=INTEGER}
+            AND username = #{username, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 获取contestId下所有参赛人用户名列表 -->
+    <select id="listContestContestantUsernameByContestId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT username
+        FROM contest_contestant
+        WHERE contest_id = #{contestId, jdbcType=INTEGER}
+    </select>
 
 </mapper>

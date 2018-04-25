@@ -6,6 +6,7 @@ import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
+import cn.idealismxxm.onlinejudge.domain.util.RequestUtil;
 import cn.idealismxxm.onlinejudge.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,16 +52,15 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping(value = "signIn", method = {RequestMethod.POST})
-    public AjaxResult<String> signIn(String account, String password, HttpServletRequest request) {
+    public AjaxResult<String> signIn(String account, String password) {
         // 登录状态拒绝登录操作
-        HttpSession session = request.getSession();
-        if (session.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER) != null) {
+        if (RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER) != null) {
             throw BusinessException.buildCustomizedMessageException("您已登录，请先注销后再登录！");
         }
 
         // 获取用户实例，并放入session
         User user = userService.getUserByAccountAndPassword(account, password);
-        session.setAttribute(CommonConstant.SESSION_ATTRIBUTE_USER, user);
+        RequestUtil.setAttribute(CommonConstant.SESSION_ATTRIBUTE_USER, user);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), user.getNickname());
     }
 
@@ -71,8 +71,8 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping(value = "signOut", method = {RequestMethod.POST})
-    public AjaxResult<Boolean> signOut(HttpServletRequest request) {
-        request.getSession().removeAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+    public AjaxResult<Boolean> signOut() {
+        RequestUtil.removeAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), true);
     }
 }

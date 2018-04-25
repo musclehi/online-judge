@@ -57,13 +57,13 @@
 
     <!-- 将Contest插入到对应数据库的表中,包括属性值为null的数据-->
 
-    <insert id="insertContest" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+    <insert id="insertContest" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
         insert into contest(id,start_time,problem_ids,creator,name,end_time)
         values(#{id,jdbcType=INTEGER},#{startTime,jdbcType=DATE},#{problemIds,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{endTime,jdbcType=DATE})
     </insert>
 
     <!-- 将Contest中属性值不为null的数据,插入到对应数据库的表中-->
-    <insert id="insertNonEmptyContest" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
+    <insert id="insertNonEmptyContest" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
         insert into contest
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
