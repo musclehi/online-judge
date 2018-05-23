@@ -51,9 +51,9 @@ public class PrivilegeInterceptor implements HandlerInterceptor {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
 
-        // 当前方法不存在 @RequirePrivilege 注解，则不需要进行拦截
+        // 当前方法不存在 @RequirePrivilege 注解，则抛出异常
         if (!method.isAnnotationPresent(RequirePrivilege.class)) {
-            return true;
+            throw BusinessException.buildCustomizedMessageException("请求方法没有 RequirePrivilege 注解");
         }
 
         // 获取当前方法所需要的权限枚举列表，并取出登录权限（如果存在）
@@ -74,6 +74,11 @@ public class PrivilegeInterceptor implements HandlerInterceptor {
      * @throws Exception Exception
      */
     private boolean validatePrivilege(HttpServletRequest request, HttpServletResponse response, List<PrivilegeEnum> privilegeEnums) throws Exception {
+        // 如果不需要任何权限，则返回 true
+        if(privilegeEnums.isEmpty()) {
+            return true;
+        }
+
         // 是否需要登录
         boolean requireSignIn = privilegeEnums.contains(PrivilegeEnum.SIGN_IN);
 

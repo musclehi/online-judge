@@ -1,5 +1,6 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
+    @RequirePrivilege
     @RequestMapping("index")
     public String index() {
         return "index";

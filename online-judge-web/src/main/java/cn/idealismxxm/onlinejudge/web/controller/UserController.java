@@ -1,5 +1,6 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
@@ -35,6 +36,7 @@ public class UserController {
      * @param userJson 用户对象json
      * @return 用户的id
      */
+    @RequirePrivilege
     @ResponseBody
     @RequestMapping(value = "signUp", method = {RequestMethod.POST})
     public AjaxResult<Integer> signUp(String userJson) {
@@ -50,6 +52,7 @@ public class UserController {
      * @param password 密码
      * @return 用户的昵称
      */
+    @RequirePrivilege
     @ResponseBody
     @RequestMapping(value = "signIn", method = {RequestMethod.POST})
     public AjaxResult<String> signIn(String account, String password) {
@@ -69,6 +72,7 @@ public class UserController {
      *
      * @return true
      */
+    @RequirePrivilege
     @ResponseBody
     @RequestMapping(value = "signOut", method = {RequestMethod.POST})
     public AjaxResult<Boolean> signOut() {
