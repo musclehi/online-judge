@@ -64,11 +64,19 @@ public interface UserPrivilegeDao{
     int updateNonEmptyUserPrivilegeById(UserPrivilege enti);
 
     /**
-     * 根据 username 和 privilege 获取用户权限实例
+     * 根据 username 和 privilege 获取用户权限实例（可以是逻辑删除的）
      *
      * @param username  用户名
      * @param privilege 权限标识
      * @return 用户权限实例
      */
     UserPrivilege getUserPrivilegeByUsernameAndPrivilege(@Param("username") String username, @Param("privilege") Integer privilege);
+
+    /**
+     * 获取 username 的用户权限列表（包含逻辑删除的）
+     *
+     * @param username  用户名
+     * @return 用户权限列表
+     */
+    List<UserPrivilege> listUserPrivilegeByUsername(String username);
 }

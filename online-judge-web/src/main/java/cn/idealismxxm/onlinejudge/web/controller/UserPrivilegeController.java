@@ -1,8 +1,10 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.RequestUtil;
 import cn.idealismxxm.onlinejudge.service.UserPrivilegeService;
@@ -32,6 +34,7 @@ public class UserPrivilegeController {
      * @param privilege 权限标识
      * @return 用户权限id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PRIVILEGE})
     @ResponseBody
     @RequestMapping(value = "addUserPrivilege", method = {RequestMethod.POST})
     public AjaxResult<Integer> addUserPrivilege(String username, Integer privilege) {
@@ -47,6 +50,7 @@ public class UserPrivilegeController {
      * @param userPrivilegeId  用户权限id
      * @return true / false
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PRIVILEGE})
     @ResponseBody
     @RequestMapping(value = "cancelUserPrivilege", method = {RequestMethod.POST})
     public AjaxResult<Boolean> cancelUserPrivilege(Integer userPrivilegeId) {

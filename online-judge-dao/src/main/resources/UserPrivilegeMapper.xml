@@ -129,13 +129,20 @@
         where id=#{id,jdbcType=INTEGER}
     </update>
 
-    <!-- 根据 username 和 privilege 获取用户权限实例 -->
+    <!-- 根据 username 和 privilege 获取用户权限实例（可以是逻辑删除的） -->
     <select id="getUserPrivilegeByUsernameAndPrivilege" resultMap="result_UserPrivilege_Map">
         SELECT
             <include refid="user_privilege_Column" />
         FROM user_privilege
         WHERE privilege = #{privilege, jdbcType = INTEGER}
-            AND username = #{username,jdbcType = VARCHAR}
+            AND username = #{username, jdbcType = VARCHAR}
     </select>
 
+    <!-- 获取 username 的用户权限列表（包含逻辑删除的） -->
+    <select id="listUserPrivilegeByUsername" resultMap="result_UserPrivilege_Map">
+        SELECT
+        <include refid="user_privilege_Column" />
+        FROM user_privilege
+        WHERE username = #{username, jdbcType = VARCHAR}
+    </select>
 </mapper>

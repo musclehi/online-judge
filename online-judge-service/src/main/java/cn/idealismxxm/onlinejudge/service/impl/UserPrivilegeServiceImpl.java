@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 用户权限相关操作接口实现
@@ -57,7 +58,21 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
         try {
             return userPrivilegeDao.getUserPrivilegeByUsernameAndPrivilege(username, privilege);
         } catch (Exception e) {
-            LOGGER.error("#getUserPrivilegeByUsernameAndPrivilege error, id: {}, privilege: {}", username, privilege, e);
+            LOGGER.error("#getUserPrivilegeByUsernameAndPrivilege error, username: {}, privilege: {}", username, privilege, e);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
+        }
+    }
+
+    @Override
+    public List<UserPrivilege> listUserPrivilegeByUsername(String username) {
+        if (StringUtils.isBlank(username)) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        try {
+            return userPrivilegeDao.listUserPrivilegeByUsername(username);
+        } catch (Exception e) {
+            LOGGER.error("#listUserPrivilegeByUsername error, username: {}", username, e);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
     }

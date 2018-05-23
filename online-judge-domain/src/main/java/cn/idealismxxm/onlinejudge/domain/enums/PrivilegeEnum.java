@@ -11,11 +11,12 @@ import java.util.List;
  * @date 2018/5/22
  */
 public enum PrivilegeEnum {
-    NONE(0, "无权限"),
     SIGN_IN(1, "登录"),
     MANAGE_PRIVILEGE(2, "管理权限"),
     MANAGE_PROBLEM(3, "管理题目"),
-    MANAGE_CONTEST(4, "管理比赛"),;
+    MANAGE_CONTEST(4, "管理比赛"),
+    ;
+
     /**
      * 权限代码
      */
@@ -45,8 +46,8 @@ public enum PrivilegeEnum {
      * @return 权限枚举列表
      */
     private static List<PrivilegeEnum> getNotEditablePrivilegeEnums() {
-        List<PrivilegeEnum> result = new ArrayList<>(2);
-        result.add(PrivilegeEnum.NONE);
+        List<PrivilegeEnum> result = new ArrayList<>(1);
+        result.add(PrivilegeEnum.SIGN_IN);
 
         return result;
     }

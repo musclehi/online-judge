@@ -1,10 +1,12 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.Contest;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.domain.util.RequestUtil;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
@@ -44,6 +45,7 @@ public class ContestController {
      * @param contestJson 比赛实例json
      * @return 比赛的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_CONTEST})
     @ResponseBody
     @RequestMapping(value = "addContest", method = {RequestMethod.POST})
     public AjaxResult<Integer> addContest(String contestJson) {
@@ -58,6 +60,7 @@ public class ContestController {
      * @param contestJson 比赛实例json
      * @return true / false
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_CONTEST})
     @ResponseBody
     @RequestMapping(value = "editContest", method = {RequestMethod.POST})
     public AjaxResult<Boolean> editContest(String contestJson) {
@@ -72,6 +75,7 @@ public class ContestController {
      * @param contestId 比赛id
      * @return 报名信息的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
     @ResponseBody
     @RequestMapping(value = "register", method = {RequestMethod.POST})
     public AjaxResult<Integer> register(Integer contestId) {
@@ -83,10 +87,11 @@ public class ContestController {
     /**
      * 提交代码
      *
-     * @param contestId 比赛id
+     * @param contestId      比赛id
      * @param submissionJson 提交记录json
      * @return 提交记录的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
     @ResponseBody
     @RequestMapping(value = "submit", method = {RequestMethod.POST})
     public AjaxResult<Integer> submit(Integer contestId, String submissionJson) {

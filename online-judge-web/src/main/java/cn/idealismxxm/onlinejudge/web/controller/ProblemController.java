@@ -1,9 +1,11 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
@@ -35,6 +37,7 @@ public class ProblemController {
      * @param testCasesJson   测试用例json（原创题目不为空）
      * @return 题目的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PROBLEM})
     @ResponseBody
     @RequestMapping(value = "add", method = {RequestMethod.POST})
     public AjaxResult<Integer> add(String problemJson, String descriptionJson, String testCasesJson) {
@@ -53,6 +56,7 @@ public class ProblemController {
      * @param testCasesJson   测试用例json（原创题目不为空）
      * @return true / false
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PROBLEM})
     @ResponseBody
     @RequestMapping(value = "edit", method = {RequestMethod.POST})
     public AjaxResult<Boolean> edit(String problemJson, String descriptionJson, String testCasesJson) {

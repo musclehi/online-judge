@@ -37,7 +37,9 @@ public enum ErrorCodeEnum {
     CONTEST_NOT_EXIST("0023", "比赛不存在"),
     USER_PRIVILEGE_NOT_EXIST("0024", "用户权限不存在"),
     USER_PRIVILEGE_ALREADY_EXIST("0025", "用户权限已存在"),
+
     USER_PRIVILEGE_ALREADY_CANCEL("0026", "用户权限已取消"),
+    USER_PRIVILEGE_NOT_ENOUGH("0027", "用户权限不足"),
 
     UNKNOWN("9999", "未知错误"),
     ;
