@@ -97,7 +97,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public Boolean modifySubmission(Submission submission) {
-        int updatedRow = 0;
+        int updatedRow;
         try{
             updatedRow = submissionDao.updateNonEmptySubmissionById(submission);
         } catch (Exception e) {

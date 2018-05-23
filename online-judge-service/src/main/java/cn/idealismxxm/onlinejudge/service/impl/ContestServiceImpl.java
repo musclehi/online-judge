@@ -90,7 +90,7 @@ public class ContestServiceImpl implements ContestService {
         }
 
         try {
-            contestDao.insertContest(contest);
+            contestDao.updateNonEmptyContestById(contest);
             return true;
         } catch (Exception e) {
             LOGGER.error("#editContest error, contest: {}", JsonUtil.objectToJson(contest), e);
