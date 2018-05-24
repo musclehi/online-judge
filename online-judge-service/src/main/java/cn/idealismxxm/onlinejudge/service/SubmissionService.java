@@ -1,6 +1,8 @@
 package cn.idealismxxm.onlinejudge.service;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
+import cn.idealismxxm.onlinejudge.domain.util.Pagination;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 
 /**
  * 提交记录相关操作接口
@@ -32,4 +34,12 @@ public interface SubmissionService {
      * @return true / false
      */
     Boolean modifySubmission(Submission submission);
+
+    /**
+     * 分页获取提交记录列表
+     *
+     * @param queryParam 查询条件
+     * @return 提交列表分页封装
+     */
+    Pagination<Submission> pageSubmissionByQueryParam(QueryParam queryParam);
 }

@@ -1,9 +1,6 @@
 package cn.idealismxxm.onlinejudge.web.controller.test;
 
-import cn.idealismxxm.onlinejudge.domain.entity.Description;
-import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
-import cn.idealismxxm.onlinejudge.domain.enums.OnlineJudgeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.PublicStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import org.junit.Before;
@@ -21,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,6 +66,22 @@ public class SubmissionControllerTest {
         }
     }
 
+    @Test
+    public void listTest() {
+        Map<String, Object> queryParam = this.initQueryParam();
+        try {
+            String responseString = mockMvc.perform(get("/submission/list")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("queryParamJson", JsonUtil.objectToJson(queryParam))
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 初始化测试用的提交记录
@@ -83,5 +99,24 @@ public class SubmissionControllerTest {
         submission.setExtension("{}");
 
         return submission;
+    }
+
+    /**
+     * 初始化测试用的查询条件
+     *
+     * @return 查询条件
+     */
+    private Map<String, Object> initQueryParam() {
+        Map<String, Object> queryParam = new HashMap<>(5);
+        queryParam.put("pageNum", 1);
+        queryParam.put("pageSize", 20);
+        Map<String, Object> param = new HashMap<>(2);
+        param.put("username", "username");
+        param.put("visibleStatus", 1);
+        param.put("result", "3");
+        param.put("language", 1);
+        queryParam.put("param", param);
+
+        return queryParam;
     }
 }

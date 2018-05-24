@@ -1,6 +1,8 @@
 package cn.idealismxxm.onlinejudge.service;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Contest;
+import cn.idealismxxm.onlinejudge.domain.util.Pagination;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 
 /**
  * 比赛相关操作接口
@@ -33,4 +35,12 @@ public interface ContestService {
      * @return true / false
      */
     Boolean editContest(Contest contest);
+
+    /**
+     * 分页获取比赛列表
+     *
+     * @param queryParam 查询条件
+     * @return 比赛列表分页封装
+     */
+    Pagination<Contest> pageContestByQueryParam(QueryParam queryParam);
 }

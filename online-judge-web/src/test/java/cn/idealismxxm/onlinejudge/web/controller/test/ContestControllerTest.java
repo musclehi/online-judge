@@ -21,7 +21,10 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.annotation.Resource;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,6 +87,23 @@ public class ContestControllerTest {
         }
     }
 
+    @Test
+    public void listTest() {
+        Map<String, Object> queryParam = this.initQueryParam();
+        try {
+            String responseString = mockMvc.perform(get("/contest/list")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("queryParamJson", JsonUtil.objectToJson(queryParam))
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 初始化测试用的比赛信息
      *
@@ -93,11 +113,28 @@ public class ContestControllerTest {
         Contest contest = new Contest();
 
         contest.setName("比赛");
-        contest.setStartTime(new Date(System.currentTimeMillis() + 1000 * 60 * 5));
-        contest.setStartTime(new Date(System.currentTimeMillis() + 1000 * 60 * 5 + 1000 * 60 * 60 * 2));
+        contest.setStartTime(new Date(System.currentTimeMillis() + 1000 * 60 * 6));
+        contest.setEndTime(new Date(System.currentTimeMillis() + 1000 * 60 * 6 + 1000 * 60 * 60 * 2));
         contest.setCreator("admin");
         contest.setProblemIds("[57]");
 
         return contest;
+    }
+
+    /**
+     * 初始化测试用的查询条件
+     *
+     * @return 查询条件
+     */
+    private Map<String, Object> initQueryParam() {
+        Map<String, Object> queryParam = new HashMap<>(5);
+        queryParam.put("pageNum", 1);
+        queryParam.put("pageSize", 20);
+        Map<String, Object> param = new HashMap<>(2);
+        param.put("name", "比赛");
+        param.put("creator", "admin");
+        queryParam.put("param", param);
+
+        return queryParam;
     }
 }

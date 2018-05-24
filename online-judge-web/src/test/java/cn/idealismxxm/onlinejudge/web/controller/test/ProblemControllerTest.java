@@ -6,6 +6,7 @@ import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
 import cn.idealismxxm.onlinejudge.domain.enums.OnlineJudgeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.PublicStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +24,11 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.annotation.Resource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -95,6 +99,57 @@ public class ProblemControllerTest {
         }
     }
 
+    @Test
+    public void getAllInfoTest() {
+        Integer problemId = 57;
+        try {
+            String responseString = mockMvc.perform(get("/problem/getAllInfo")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("problemId", problemId.toString())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void listTest() {
+        Map<String, Object> queryParam = this.initQueryParam();
+        try {
+            String responseString = mockMvc.perform(get("/problem/list")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("queryParamJson", JsonUtil.objectToJson(queryParam))
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getTest() {
+        Integer problemId = 57;
+        try {
+            String responseString = mockMvc.perform(get("/problem/get")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("problemId", problemId.toString())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 初始化测试用的题目
      *
@@ -151,5 +206,21 @@ public class ProblemControllerTest {
         }
 
         return testCases;
+    }
+
+    /**
+     * 初始化测试用的查询条件
+     *
+     * @return 查询条件
+     */
+    private Map<String, Object> initQueryParam() {
+        Map<String, Object> queryParam = new HashMap<>(5);
+        queryParam.put("pageNum", 1);
+        queryParam.put("pageSize", 20);
+        Map<String, Object> param = new HashMap<>(2);
+        param.put("title", "标题");
+        queryParam.put("param", param);
+
+        return queryParam;
     }
 }

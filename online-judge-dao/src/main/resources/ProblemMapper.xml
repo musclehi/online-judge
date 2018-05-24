@@ -4,7 +4,7 @@
     <!-- Problem的resultMap,column是给数据库列起的别名,它对应property类的属性-->
     <resultMap id="result_Problem_Map" type="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="updated_time" jdbcType="DATE" property="updatedTime"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
         <result column="time_limit" jdbcType="INTEGER" property="timeLimit"/>
         <result column="description_id" jdbcType="INTEGER" property="descriptionId"/>
         <result column="public_status" jdbcType="TINYINT" property="publicStatus"/>
@@ -179,4 +179,30 @@
         where id=#{id,jdbcType=INTEGER}
     </update>
 
+    <!-- 统计 符合查询条件 的题目总数 -->
+    <select id="countProblemByQueryMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM problem
+        <where>
+            <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+        </where>
+    </select>
+
+    <!-- 分页查询 符合查询条件 的题目 -->
+    <select id="pageProblemByQueryMap" parameterType="java.util.Map" resultMap="result_Problem_Map">
+        SELECT
+        <include refid="problem_Column"/>
+        FROM problem
+        <where>
+            <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+        </where>
+        <if test="limit != null">
+            <if test="offset != null">
+                LIMIT #{offset, jdbcType=INTEGER}, #{limit,jdbcType=INTEGER}
+            </if>
+            <if test="offset == null">
+                LIMIT #{limit,jdbcType=INTEGER}
+            </if>
+        </if>
+    </select>
 </mapper>

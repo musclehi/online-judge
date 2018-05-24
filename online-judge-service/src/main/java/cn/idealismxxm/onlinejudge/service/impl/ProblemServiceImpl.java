@@ -10,8 +10,11 @@ import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.OnlineJudgeEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
+import cn.idealismxxm.onlinejudge.domain.util.Pagination;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +23,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 题目相关操作接口实现
@@ -142,6 +143,45 @@ public class ProblemServiceImpl implements ProblemService {
             LOGGER.error("#editProblem error, problem: {}, description: {}", JsonUtil.objectToJson(problem), JsonUtil.objectToJson(description), e);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
+    }
+
+    @Override
+    public Pagination<Problem> pageProblemByQueryParam(QueryParam queryParam) {
+        // 1. 参数校验
+        if(queryParam == null) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        // 2. 设置查询条件的map
+        Map<String, Object> queryMap = new HashMap<>(16);
+        queryMap.putAll(queryParam.getParam());
+
+        // 3. 获取数据总数，并设置相关的分页信息
+        Pagination<Problem> problemPagination = new Pagination<>();
+        problemPagination.setPageSize(queryParam.getPageSize());
+        Integer totalCount = problemDao.countProblemByQueryMap(queryMap);
+        Integer totalPage = totalCount / problemPagination.getPageSize();
+        if(totalCount % problemPagination.getPageSize() != 0) {
+            totalPage = totalPage + 1;
+        }
+        problemPagination.setTotalCount(totalCount);
+        problemPagination.setTotalPage(totalPage);
+
+        // 4. 如果查询页号超过页数，则设置当前页为最大页
+        if(queryParam.getPageNum() > problemPagination.getTotalPage()) {
+            queryParam.setPageNum(problemPagination.getTotalPage());
+        }
+        problemPagination.setPageNum(queryParam.getPageNum());
+
+        queryMap.put("offset", queryParam.getOffset());
+        queryMap.put("limit", queryParam.getLimit());
+
+        // 5. 若存在数据，则获取本页数据
+        if(totalCount != 0) {
+            problemPagination.setData(problemDao.pageProblemByQueryMap(queryMap));
+        }
+
+        return problemPagination;
     }
 
     /**

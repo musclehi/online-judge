@@ -3,8 +3,11 @@ package cn.idealismxxm.onlinejudge.service;
 import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
+import cn.idealismxxm.onlinejudge.domain.util.Pagination;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 题目相关操作接口
@@ -41,4 +44,12 @@ public interface ProblemService {
      * @return true / false
      */
     Boolean editProblem(Problem problem, Description description, List<TestCase> testCases);
+
+    /**
+     * 分页获取题目列表
+     *
+     * @param queryParam 查询条件
+     * @return 题目列表分页封装
+     */
+    Pagination<Problem> pageProblemByQueryParam(QueryParam queryParam);
 }
