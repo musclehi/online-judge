@@ -4,12 +4,12 @@
     <!-- Submission的resultMap,column是给数据库列起的别名,它对应property类的属性-->
     <resultMap id="result_Submission_Map" type="cn.idealismxxm.onlinejudge.domain.entity.Submission">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="updated_time" jdbcType="DATE" property="updatedTime" />
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
         <result column="extension" jdbcType="VARCHAR" property="extension" />
         <result column="memory" jdbcType="INTEGER" property="memory" />
         <result column="public_status" jdbcType="TINYINT" property="publicStatus" />
         <result column="language" jdbcType="INTEGER" property="language" />
-        <result column="submitted_time" jdbcType="DATE" property="submittedTime" />
+        <result column="submitted_time" jdbcType="TIMESTAMP" property="submittedTime" />
         <result column="source" jdbcType="VARCHAR" property="source" />
         <result column="result" jdbcType="TINYINT" property="result" />
         <result column="remote_submission_id" jdbcType="INTEGER" property="remoteSubmissionId" />
@@ -212,4 +212,36 @@
         where id=#{id,jdbcType=INTEGER}
     </update>
 
+    <!-- 统计 符合查询条件 的提交记录总数 -->
+    <select id="countSubmissionByQueryMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM submission
+        <where>
+            AND visible_status = #{visibleStatus, jdbcType = INTEGER},
+            <if test="result != null ">AND submission.result = #{username, jdbcType = INTEGER}</if>
+            <if test="language != null ">AND submission.language = #{language, jdbcType = INTEGER}</if>
+            <if test="username != null ">AND submission.username LIKE "%"#{username, jdbcType = VARCHAR}"%"</if>
+        </where>
+    </select>
+
+    <!-- 分页查询 符合查询条件 的提交记录 -->
+    <select id="pageSubmissionByQueryMap" parameterType="java.util.Map" resultMap="result_Submission_Map">
+        SELECT
+        <include refid="submission_Column"/>
+        FROM submission
+        <where>
+            AND visible_status = #{visibleStatus, jdbcType = INTEGER},
+            <if test="result != null ">AND submission.result = #{username, jdbcType = INTEGER}</if>
+            <if test="language != null ">AND submission.language = #{language, jdbcType = INTEGER}</if>
+            <if test="username != null ">AND submission.username LIKE "%"#{username, jdbcType = VARCHAR}"%"</if>
+        </where>
+        <if test="limit != null">
+            <if test="offset != null">
+                LIMIT #{offset, jdbcType=INTEGER}, #{limit,jdbcType=INTEGER}
+            </if>
+            <if test="offset == null">
+                LIMIT #{limit,jdbcType=INTEGER}
+            </if>
+        </if>
+    </select>
 </mapper>

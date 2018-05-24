@@ -1,6 +1,7 @@
 package cn.idealismxxm.onlinejudge.dao;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import java.util.List;
+import java.util.Map;
 public interface SubmissionDao{
 	/**
 	 * 获得Submission数据的总行数
@@ -60,4 +61,20 @@ public interface SubmissionDao{
 	 * @return
 	 */
     int updateNonEmptySubmissionById(Submission enti);
+
+	/**
+	 * 统计 符合查询条件 的提交记录总数
+	 *
+	 * @param queryMap 查询条件的 map
+	 * @return 提交记录总数
+	 */
+    Integer countSubmissionByQueryMap(Map<String, Object> queryMap);
+
+	/**
+	 * 分页查询 符合查询条件 的提交记录
+	 *
+	 * @param queryMap 查询条件的 map
+	 * @return 提交记录列表
+	 */
+	List<Submission> pageSubmissionByQueryMap(Map<String, Object> queryMap);
 }

@@ -7,6 +7,8 @@ import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
+import cn.idealismxxm.onlinejudge.domain.util.Pagination;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.domain.util.RequestUtil;
 import cn.idealismxxm.onlinejudge.service.ContestService;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 比赛相关操作接口实现
@@ -90,12 +94,51 @@ public class ContestServiceImpl implements ContestService {
         }
 
         try {
-            contestDao.insertContest(contest);
+            contestDao.updateNonEmptyContestById(contest);
             return true;
         } catch (Exception e) {
             LOGGER.error("#editContest error, contest: {}", JsonUtil.objectToJson(contest), e);
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
+    }
+
+    @Override
+    public Pagination<Contest> pageContestByQueryParam(QueryParam queryParam) {
+        // 1. 参数校验
+        if(queryParam == null) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        // 2. 设置查询条件的map
+        Map<String, Object> queryMap = new HashMap<>(16);
+        queryMap.putAll(queryParam.getParam());
+
+        // 3. 获取数据总数，并设置相关的分页信息
+        Pagination<Contest> contestPagination = new Pagination<>();
+        contestPagination.setPageSize(queryParam.getPageSize());
+        Integer totalCount = contestDao.countContestByQueryMap(queryMap);
+        Integer totalPage = totalCount / contestPagination.getPageSize();
+        if(totalCount % contestPagination.getPageSize() != 0) {
+            totalPage = totalPage + 1;
+        }
+        contestPagination.setTotalCount(totalCount);
+        contestPagination.setTotalPage(totalPage);
+
+        // 4. 如果查询页号超过页数，则设置当前页为最大页
+        if(queryParam.getPageNum() > contestPagination.getTotalPage()) {
+            queryParam.setPageNum(contestPagination.getTotalPage());
+        }
+        contestPagination.setPageNum(queryParam.getPageNum());
+
+        queryMap.put("offset", queryParam.getOffset());
+        queryMap.put("limit", queryParam.getLimit());
+
+        // 5. 若存在数据，则获取本页数据
+        if(totalCount != 0) {
+            contestPagination.setData(contestDao.pageContestByQueryMap(queryMap));
+        }
+
+        return contestPagination;
     }
 
     /**

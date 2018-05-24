@@ -1,7 +1,11 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
+import cn.idealismxxm.onlinejudge.domain.util.Pagination;
+import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.service.SubmissionService;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
@@ -30,11 +34,28 @@ public class SubmissionController {
      * @param submissionJson  提交记录json
      * @return 提交记录的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
     @ResponseBody
     @RequestMapping(value = "submit", method = {RequestMethod.POST})
     public AjaxResult<Integer> submit(String submissionJson) {
         Submission submission = JsonUtil.jsonToObject(submissionJson, Submission.class);
         Integer id = submissionService.submit(submission);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
+    }
+
+    /**
+     * 分页获取提交记录列表
+     *
+     * @param queryParamJson 查询条件 的 json串
+     * @return 提交列表分页封装
+     */
+    @RequirePrivilege
+    @ResponseBody
+    @RequestMapping(value = "list", method = {RequestMethod.GET})
+    public AjaxResult<Pagination<Submission>> list(String queryParamJson) {
+        // TODO 屏蔽敏感信息
+        QueryParam queryParam = JsonUtil.jsonToObject(queryParamJson, QueryParam.class);
+        Pagination<Submission> result = submissionService.pageSubmissionByQueryParam(queryParam);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
 }

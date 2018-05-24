@@ -4,7 +4,7 @@
     <!-- User的resultMap,column是给数据库列起的别名,它对应property类的属性-->
     <resultMap id="result_User_Map" type="cn.idealismxxm.onlinejudge.domain.entity.User">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="updated_time" jdbcType="DATE" property="updatedTime" />
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
         <result column="password" jdbcType="VARCHAR" property="password" />
         <result column="nickname" jdbcType="VARCHAR" property="nickname" />
         <result column="email" jdbcType="VARCHAR" property="email" />

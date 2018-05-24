@@ -21,4 +21,13 @@
         <property name="suffix" value=".httl" />
     </bean>
 
+    <!-- 配置拦截器 -->
+    <mvc:interceptors>
+        <!-- 多个拦截器，顺序执行 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="cn.idealismxxm.onlinejudge.web.interceptor.PrivilegeInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
 </beans>

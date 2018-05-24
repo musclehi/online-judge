@@ -3,6 +3,7 @@ package cn.idealismxxm.onlinejudge.dao;
 import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProblemDao {
     /**
@@ -82,4 +83,20 @@ public interface ProblemDao {
      * @return
      */
     int updateNonEmptyProblemById(Problem enti);
+
+    /**
+     * 统计 符合查询条件 的题目总数
+     *
+     * @param queryMap 查询条件的 map
+     * @return 题目总数
+     */
+    int countProblemByQueryMap(Map<String, Object> queryMap);
+
+    /**
+     * 分页查询 符合查询条件 的题目
+     *
+     * @param queryMap 查询条件的 map
+     * @return 题目列表
+     */
+    List<Problem> pageProblemByQueryMap(Map<String, Object> queryMap);
 }

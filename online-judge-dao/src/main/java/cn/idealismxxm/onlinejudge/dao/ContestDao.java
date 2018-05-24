@@ -1,6 +1,7 @@
 package cn.idealismxxm.onlinejudge.dao;
 import cn.idealismxxm.onlinejudge.domain.entity.Contest;
 import java.util.List;
+import java.util.Map;
 public interface ContestDao{
 	/**
 	 * 获得Contest数据的总行数
@@ -60,4 +61,20 @@ public interface ContestDao{
 	 * @return
 	 */
 	int updateNonEmptyContestById(Contest enti);
+
+	/**
+	 * 统计 符合查询条件 的比赛总数
+	 *
+	 * @param queryMap 查询条件的 map
+	 * @return 比赛总数
+	 */
+	Integer countContestByQueryMap(Map<String, Object> queryMap);
+
+	/**
+	 * 分页查询 符合查询条件 的比赛
+	 *
+	 * @param queryMap 查询条件的 map
+	 * @return 比赛列表
+	 */
+    List<Contest> pageContestByQueryMap(Map<String, Object> queryMap);
 }

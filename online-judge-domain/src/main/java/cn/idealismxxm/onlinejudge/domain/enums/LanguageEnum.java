@@ -81,7 +81,7 @@ public enum LanguageEnum {
      * @return 语言 枚举类型
      */
     public static LanguageEnum getLanguageEnumByCode(Integer code) {
-        for (LanguageEnum languageEnum : values()) {
+        for (LanguageEnum languageEnum : LanguageEnum.values()) {
             if (languageEnum.getCode().equals(code)) {
                 return languageEnum;
             }

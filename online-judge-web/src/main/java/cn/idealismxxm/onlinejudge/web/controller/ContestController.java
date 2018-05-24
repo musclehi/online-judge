@@ -1,13 +1,13 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
+import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.Contest;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
-import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
-import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
-import cn.idealismxxm.onlinejudge.domain.util.RequestUtil;
+import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
+import cn.idealismxxm.onlinejudge.domain.util.*;
 import cn.idealismxxm.onlinejudge.service.ContestContestantService;
 import cn.idealismxxm.onlinejudge.service.ContestService;
 import cn.idealismxxm.onlinejudge.service.ContestSubmissionService;
@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -44,6 +45,7 @@ public class ContestController {
      * @param contestJson 比赛实例json
      * @return 比赛的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_CONTEST})
     @ResponseBody
     @RequestMapping(value = "addContest", method = {RequestMethod.POST})
     public AjaxResult<Integer> addContest(String contestJson) {
@@ -58,6 +60,7 @@ public class ContestController {
      * @param contestJson 比赛实例json
      * @return true / false
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_CONTEST})
     @ResponseBody
     @RequestMapping(value = "editContest", method = {RequestMethod.POST})
     public AjaxResult<Boolean> editContest(String contestJson) {
@@ -72,6 +75,7 @@ public class ContestController {
      * @param contestId 比赛id
      * @return 报名信息的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
     @ResponseBody
     @RequestMapping(value = "register", method = {RequestMethod.POST})
     public AjaxResult<Integer> register(Integer contestId) {
@@ -83,10 +87,11 @@ public class ContestController {
     /**
      * 提交代码
      *
-     * @param contestId 比赛id
+     * @param contestId      比赛id
      * @param submissionJson 提交记录json
      * @return 提交记录的id
      */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
     @ResponseBody
     @RequestMapping(value = "submit", method = {RequestMethod.POST})
     public AjaxResult<Integer> submit(Integer contestId, String submissionJson) {
@@ -96,5 +101,34 @@ public class ContestController {
 
         Integer id = contestSubmissionService.submit(contestId, submission);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
+    }
+
+    /**
+     * 获取比赛题目页信息
+     *
+     * @param contestId 题目id
+     * @return 比赛题目也信息
+     */
+    @RequirePrivilege
+    @ResponseBody
+    @RequestMapping(value = "get", method = {RequestMethod.GET})
+    public AjaxResult<Map<String, Object>> get(Integer contestId) {
+        // TODO 完成比赛信息和题目列表获取
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), new HashMap<String, Object>(2));
+    }
+
+    /**
+     * 分页获取比赛列表
+     *
+     * @param queryParamJson 查询条件 的 json串
+     * @return 题目列表分页封装
+     */
+    @RequirePrivilege
+    @ResponseBody
+    @RequestMapping(value = "list", method = {RequestMethod.GET})
+    public AjaxResult<Pagination<Contest>> list(String queryParamJson) {
+        QueryParam queryParam = JsonUtil.jsonToObject(queryParamJson, QueryParam.class);
+        Pagination<Contest> result = contestService.pageContestByQueryParam(queryParam);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
 }
