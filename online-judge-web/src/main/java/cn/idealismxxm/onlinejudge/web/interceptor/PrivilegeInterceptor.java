@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class PrivilegeInterceptor implements HandlerInterceptor {
 
         // 获取当前方法所需要的权限枚举列表，并取出登录权限（如果存在）
         RequirePrivilege requirePrivilege = method.getAnnotation(RequirePrivilege.class);
-        List<PrivilegeEnum> privilegeEnums = Arrays.asList(requirePrivilege.privilegeEnum());
+        List<PrivilegeEnum> privilegeEnums = new ArrayList<>(Arrays.asList(requirePrivilege.privilegeEnum()));
 
         // 校验权限
         return this.validatePrivilege(request, response, privilegeEnums);
