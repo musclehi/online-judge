@@ -55,4 +55,12 @@ public interface UserPrivilegeService {
      * @return true / false
      */
     Boolean cancelUserPrivilege(Integer userPrivilegeId, String updator);
+
+    /**
+     * 列出某用户的对于所有权限拥关系的信息列表
+     *
+     * @param username  用户名
+     * @return 信息列表
+     */
+    List<UserPrivilege> listAllPrivilegeInfo(String username);
 }

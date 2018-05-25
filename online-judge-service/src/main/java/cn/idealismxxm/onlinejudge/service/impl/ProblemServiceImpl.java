@@ -159,29 +159,46 @@ public class ProblemServiceImpl implements ProblemService {
         // 3. 获取数据总数，并设置相关的分页信息
         Pagination<Problem> problemPagination = new Pagination<>();
         problemPagination.setPageSize(queryParam.getPageSize());
-        Integer totalCount = problemDao.countProblemByQueryMap(queryMap);
-        Integer totalPage = totalCount / problemPagination.getPageSize();
-        if(totalCount % problemPagination.getPageSize() != 0) {
-            totalPage = totalPage + 1;
-        }
-        problemPagination.setTotalCount(totalCount);
-        problemPagination.setTotalPage(totalPage);
+        try {
+            Integer totalCount = problemDao.countProblemByQueryMap(queryMap);
+            Integer totalPage = totalCount / problemPagination.getPageSize();
+            if (totalCount % problemPagination.getPageSize() != 0) {
+                totalPage = totalPage + 1;
+            }
+            problemPagination.setTotalCount(totalCount);
+            problemPagination.setTotalPage(totalPage);
 
-        // 4. 如果查询页号超过页数，则设置当前页为最大页
-        if(queryParam.getPageNum() > problemPagination.getTotalPage()) {
-            queryParam.setPageNum(problemPagination.getTotalPage());
-        }
-        problemPagination.setPageNum(queryParam.getPageNum());
+            // 4. 如果查询页号超过页数，则设置当前页为最大页
+            if (queryParam.getPageNum() > problemPagination.getTotalPage()) {
+                queryParam.setPageNum(problemPagination.getTotalPage());
+            }
+            problemPagination.setPageNum(queryParam.getPageNum());
 
-        queryMap.put("offset", queryParam.getOffset());
-        queryMap.put("limit", queryParam.getLimit());
+            queryMap.put("offset", queryParam.getOffset());
+            queryMap.put("limit", queryParam.getLimit());
 
-        // 5. 若存在数据，则获取本页数据
-        if(totalCount != 0) {
-            problemPagination.setData(problemDao.pageProblemByQueryMap(queryMap));
+            // 5. 若存在数据，则获取本页数据
+            if (totalCount != 0) {
+                problemPagination.setData(problemDao.pageProblemByQueryMap(queryMap));
+            }
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
         }
 
         return problemPagination;
+    }
+
+    @Override
+    public List<Problem> listProblemByIds(List<Integer> ids) {
+        if(CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>(0);
+        }
+
+        try {
+            return problemDao.listProblemByIds(ids);
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+        }
     }
 
     /**

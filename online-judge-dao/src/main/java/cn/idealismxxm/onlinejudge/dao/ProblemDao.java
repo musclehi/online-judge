@@ -99,4 +99,12 @@ public interface ProblemDao {
      * @return 题目列表
      */
     List<Problem> pageProblemByQueryMap(Map<String, Object> queryMap);
+
+    /**
+     * 获取 主键 在 ids 列表中的题目列表
+     *
+     * @param ids id列表
+     * @return 题目列表
+     */
+    List<Problem> listProblemByIds(List<Integer> ids);
 }

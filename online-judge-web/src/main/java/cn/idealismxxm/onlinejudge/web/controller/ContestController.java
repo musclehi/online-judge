@@ -2,6 +2,7 @@ package cn.idealismxxm.onlinejudge.web.controller;
 
 import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.Contest;
+import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
@@ -11,6 +12,7 @@ import cn.idealismxxm.onlinejudge.domain.util.*;
 import cn.idealismxxm.onlinejudge.service.ContestContestantService;
 import cn.idealismxxm.onlinejudge.service.ContestService;
 import cn.idealismxxm.onlinejudge.service.ContestSubmissionService;
+import cn.idealismxxm.onlinejudge.service.ProblemService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,6 +41,9 @@ public class ContestController {
 
     @Resource
     private ContestSubmissionService contestSubmissionService;
+
+    @Resource
+    private ProblemService problemService;
 
     /**
      * 添加新比赛
@@ -113,8 +119,13 @@ public class ContestController {
     @ResponseBody
     @RequestMapping(value = "get", method = {RequestMethod.GET})
     public AjaxResult<Map<String, Object>> get(Integer contestId) {
-        // TODO 完成比赛信息和题目列表获取
-        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), new HashMap<String, Object>(2));
+        Contest contest = contestService.getContestById(contestId);
+        List<Integer> ids = JsonUtil.jsonToList(contest.getProblemIds(), Integer.class);
+        List<Problem> problems = problemService.listProblemByIds(ids);
+        Map<String, Object> result = new HashMap<>(4);
+        result.put("contest", contest);
+        result.put("problems", problems);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
 
     /**

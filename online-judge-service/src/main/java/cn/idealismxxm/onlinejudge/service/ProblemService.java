@@ -7,7 +7,6 @@ import cn.idealismxxm.onlinejudge.domain.util.Pagination;
 import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 题目相关操作接口
@@ -52,4 +51,12 @@ public interface ProblemService {
      * @return 题目列表分页封装
      */
     Pagination<Problem> pageProblemByQueryParam(QueryParam queryParam);
+
+    /**
+     * 获取 主键 在 ids 列表中的题目列表
+     *
+     * @param ids id列表
+     * @return 题目列表
+     */
+    List<Problem> listProblemByIds(List<Integer> ids);
 }
