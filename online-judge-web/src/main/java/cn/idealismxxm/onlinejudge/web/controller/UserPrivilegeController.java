@@ -42,7 +42,7 @@ public class UserPrivilegeController {
     @ResponseBody
     @RequestMapping(value = "addUserPrivilege", method = {RequestMethod.POST})
     public AjaxResult<Integer> addUserPrivilege(String username, Integer privilege) {
-        User user = (User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         String updator = user.getUsername();
         Integer id = userPrivilegeService.addUserPrivilege(username, privilege, updator);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
@@ -58,7 +58,7 @@ public class UserPrivilegeController {
     @ResponseBody
     @RequestMapping(value = "cancelUserPrivilege", method = {RequestMethod.POST})
     public AjaxResult<Boolean> cancelUserPrivilege(Integer userPrivilegeId) {
-        User user = (User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         String updator = user.getUsername();
         Boolean result = userPrivilegeService.cancelUserPrivilege(userPrivilegeId, updator);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);

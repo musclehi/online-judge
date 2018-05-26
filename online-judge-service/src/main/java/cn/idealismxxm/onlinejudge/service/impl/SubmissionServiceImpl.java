@@ -14,6 +14,7 @@ import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
 import cn.idealismxxm.onlinejudge.service.SubmissionService;
 import cn.idealismxxm.onlinejudge.service.jms.producer.MessageProducer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -66,14 +67,16 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public Integer submit(Submission submission) {
-        if (submission == null || submission.getProblemId() == null) {
+    public Integer submit(Submission submission, String username) {
+        if (submission == null || submission.getProblemId() == null || StringUtils.isBlank(username)) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
 
         // 获取题目信息
         Problem problem = problemService.getProblemById(submission.getProblemId());
         try {
+            // 设置提交者用户名
+            submission.setUsername(username);
             // 未判题时没有其他OJ提交帐号，默认设为 -1
             submission.setRemoteAccountId(-1);
             // 未判题时没有其他OJ提交记录，默认设为 -1

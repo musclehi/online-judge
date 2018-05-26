@@ -15,7 +15,8 @@ public interface ContestSubmissionService {
      *
      * @param contestId  比赛id
      * @param submission 提交记录
+     * @param username   提交者用户名
      * @return 提交记录的id
      */
-    Integer submit(Integer contestId, Submission submission);
+    Integer submit(Integer contestId, Submission submission, String username);
 }

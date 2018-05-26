@@ -23,9 +23,10 @@ public interface SubmissionService {
      * 提交代码
      *
      * @param submission 提交记录
+     * @param username   提交者用户名
      * @return 提交记录的id
      */
-    Integer submit(Submission submission);
+    Integer submit(Submission submission, String username);
 
     /**
      * 更新提交记录

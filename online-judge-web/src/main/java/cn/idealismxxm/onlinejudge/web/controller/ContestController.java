@@ -85,7 +85,7 @@ public class ContestController {
     @ResponseBody
     @RequestMapping(value = "register", method = {RequestMethod.POST})
     public AjaxResult<Integer> register(Integer contestId) {
-        User user = (User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         Integer id = contestContestantService.register(contestId, user.getUsername());
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
     }
@@ -101,11 +101,10 @@ public class ContestController {
     @ResponseBody
     @RequestMapping(value = "submit", method = {RequestMethod.POST})
     public AjaxResult<Integer> submit(Integer contestId, String submissionJson) {
-        User user = (User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         Submission submission = JsonUtil.jsonToObject(submissionJson, Submission.class);
-        Objects.requireNonNull(submission).setUsername(user.getUsername());
 
-        Integer id = contestSubmissionService.submit(contestId, submission);
+        Integer id = contestSubmissionService.submit(contestId, submission, user.getUsername());
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
     }
 
