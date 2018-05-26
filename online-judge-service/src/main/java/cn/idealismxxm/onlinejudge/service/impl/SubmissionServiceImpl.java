@@ -6,6 +6,7 @@ import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.enums.ActiveMQQueueEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ResultEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.VisibleStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.domain.util.Pagination;
@@ -82,6 +83,8 @@ public class SubmissionServiceImpl implements SubmissionService {
             // 未判题时没有使用空间，默认设为 -1
             submission.setMemory(-1);
             submission.setResult(ResultEnum.QUEUING.getCode());
+            // 题库提交默认全部可见
+            submission.setVisibleStatus(VisibleStatusEnum.VISIBLE.getCode());
 
             // 数据入库
             submissionDao.insertSubmission(submission);
