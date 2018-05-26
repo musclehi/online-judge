@@ -66,7 +66,8 @@ public class ContestServiceImpl implements ContestService {
         }
 
         try {
-            contest.setCreator(((User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER)).getUsername());
+            User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+            contest.setCreator(user.getUsername());
             contestDao.insertContest(contest);
             return contest.getId();
         } catch (Exception e) {

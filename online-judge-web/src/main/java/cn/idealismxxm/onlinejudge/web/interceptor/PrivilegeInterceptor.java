@@ -94,7 +94,8 @@ public class PrivilegeInterceptor implements HandlerInterceptor {
         }
 
         // 获取当前用户的权限标识列表
-        String username = ((User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER)).getUsername();
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        String username = user.getUsername();
         List<UserPrivilege> userPrivileges = userPrivilegeService.listUserPrivilegeByUsername(username);
 
         userPrivileges.forEach(userPrivilege -> {

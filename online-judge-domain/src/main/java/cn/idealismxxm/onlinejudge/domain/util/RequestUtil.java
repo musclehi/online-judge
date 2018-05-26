@@ -38,8 +38,8 @@ public class RequestUtil {
      * @param name 属性名
      * @return 属性值
      */
-    public static Object getAttribute(String name) {
-        return RequestUtil.getRequest().getSession().getAttribute(name);
+    public static <T> T getAttribute(String name) {
+        return (T) RequestUtil.getRequest().getSession().getAttribute(name);
     }
 
     /**

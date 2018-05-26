@@ -32,14 +32,14 @@ public class ContestSubmissionServiceImpl implements ContestSubmissionService {
     private ContestSubmissionDao contestSubmissionDao;
 
     @Override
-    public Integer submit(Integer contestId, Submission submission) {
+    public Integer submit(Integer contestId, Submission submission, String username) {
         // 1. 参数校验
         if (contestId == null || contestId <= 0) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
 
         // 2. 提交记录入库
-        Integer submissionId = submissionService.submit(submission);
+        Integer submissionId = submissionService.submit(submission, username);
 
         // 3. 比赛提交记录入库
         try {
