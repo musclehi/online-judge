@@ -6,6 +6,7 @@ import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.enums.ActiveMQQueueEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ResultEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.VisibleStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.domain.util.Pagination;
@@ -82,6 +83,8 @@ public class SubmissionServiceImpl implements SubmissionService {
             // 未判题时没有使用空间，默认设为 -1
             submission.setMemory(-1);
             submission.setResult(ResultEnum.QUEUING.getCode());
+            // 题库提交默认全部可见
+            submission.setVisibleStatus(VisibleStatusEnum.VISIBLE.getCode());
 
             // 数据入库
             submissionDao.insertSubmission(submission);
@@ -128,26 +131,30 @@ public class SubmissionServiceImpl implements SubmissionService {
         // 3. 获取数据总数，并设置相关的分页信息
         Pagination<Submission> submissionPagination = new Pagination<>();
         submissionPagination.setPageSize(queryParam.getPageSize());
-        Integer totalCount = submissionDao.countSubmissionByQueryMap(queryMap);
-        Integer totalPage = totalCount / submissionPagination.getPageSize();
-        if(totalCount % submissionPagination.getPageSize() != 0) {
-            totalPage = totalPage + 1;
-        }
-        submissionPagination.setTotalCount(totalCount);
-        submissionPagination.setTotalPage(totalPage);
+        try {
+            Integer totalCount = submissionDao.countSubmissionByQueryMap(queryMap);
+            Integer totalPage = totalCount / submissionPagination.getPageSize();
+            if (totalCount % submissionPagination.getPageSize() != 0) {
+                totalPage = totalPage + 1;
+            }
+            submissionPagination.setTotalCount(totalCount);
+            submissionPagination.setTotalPage(totalPage);
 
-        // 4. 如果查询页号超过页数，则设置当前页为最大页
-        if(queryParam.getPageNum() > submissionPagination.getTotalPage()) {
-            queryParam.setPageNum(submissionPagination.getTotalPage());
-        }
-        submissionPagination.setPageNum(queryParam.getPageNum());
+            // 4. 如果查询页号超过页数，则设置当前页为最大页
+            if (queryParam.getPageNum() > submissionPagination.getTotalPage()) {
+                queryParam.setPageNum(submissionPagination.getTotalPage());
+            }
+            submissionPagination.setPageNum(queryParam.getPageNum());
 
-        queryMap.put("offset", queryParam.getOffset());
-        queryMap.put("limit", queryParam.getLimit());
+            queryMap.put("offset", queryParam.getOffset());
+            queryMap.put("limit", queryParam.getLimit());
 
-        // 5. 若存在数据，则获取本页数据
-        if(totalCount != 0) {
-            submissionPagination.setData(submissionDao.pageSubmissionByQueryMap(queryMap));
+            // 5. 若存在数据，则获取本页数据
+            if (totalCount != 0) {
+                submissionPagination.setData(submissionDao.pageSubmissionByQueryMap(queryMap));
+            }
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
         }
 
         return submissionPagination;

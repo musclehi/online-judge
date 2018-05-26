@@ -13,7 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户权限相关操作接口实现
@@ -139,5 +142,38 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
         } catch (Exception e) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
+    }
+
+    @Override
+    public List<UserPrivilege> listAllPrivilegeInfo(String username) {
+        if(StringUtils.isBlank(username)) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        // 1. 获取所有可设置的权限枚举类型列表
+        List<PrivilegeEnum> privilegeEnums = PrivilegeEnum.getEditablePrivilegeEnums();
+
+        // 2. 获取 username 的所有用户权限（包括逻辑删除的），并根据权限标识放入 map
+        List<UserPrivilege> userPrivileges = userPrivilegeDao.listUserPrivilegeByUsername(username);
+        Map<Integer, UserPrivilege> map = new HashMap<>(privilegeEnums.size() * 4 / 3 + 1);
+        userPrivileges.forEach(userPrivilege -> map.put(userPrivilege.getPrivilege(), userPrivilege));
+
+        // 3. 构造返回的 用户的所有权限信息，并屏蔽无关信息
+        List<UserPrivilege> result = new ArrayList<>(privilegeEnums.size());
+        privilegeEnums.forEach(privilegeEnum -> {
+            UserPrivilege userPrivilege = map.get(privilegeEnum.getCode());
+            UserPrivilege item = new UserPrivilege();
+            item.setUsername(username);
+            item.setPrivilege(privilegeEnum.getCode());
+            // 如果数据库中没有用户的该权限信息，则设置为逻辑删除，表示其不存在
+            if(userPrivilege == null) {
+                item.setDeletedStatus(DeletedStatusEnum.DELETED.getCode());
+            } else {
+                item.setId(userPrivilege.getId());
+                item.setDeletedStatus(userPrivilege.getDeletedStatus());
+            }
+        });
+
+        return result;
     }
 }

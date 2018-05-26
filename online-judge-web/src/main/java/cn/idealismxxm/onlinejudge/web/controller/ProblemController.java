@@ -76,7 +76,7 @@ public class ProblemController {
         Description description = JsonUtil.jsonToObject(descriptionJson, Description.class);
         List<TestCase> testCases = JsonUtil.jsonToList(testCasesJson, TestCase.class);
         Boolean result = problemService.editProblem(problem, description, testCases);
-        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getErrorCode(), result);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
 
     /**

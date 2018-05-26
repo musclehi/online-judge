@@ -116,26 +116,30 @@ public class ContestServiceImpl implements ContestService {
         // 3. 获取数据总数，并设置相关的分页信息
         Pagination<Contest> contestPagination = new Pagination<>();
         contestPagination.setPageSize(queryParam.getPageSize());
-        Integer totalCount = contestDao.countContestByQueryMap(queryMap);
-        Integer totalPage = totalCount / contestPagination.getPageSize();
-        if(totalCount % contestPagination.getPageSize() != 0) {
-            totalPage = totalPage + 1;
-        }
-        contestPagination.setTotalCount(totalCount);
-        contestPagination.setTotalPage(totalPage);
+        try {
+            Integer totalCount = contestDao.countContestByQueryMap(queryMap);
+            Integer totalPage = totalCount / contestPagination.getPageSize();
+            if (totalCount % contestPagination.getPageSize() != 0) {
+                totalPage = totalPage + 1;
+            }
+            contestPagination.setTotalCount(totalCount);
+            contestPagination.setTotalPage(totalPage);
 
-        // 4. 如果查询页号超过页数，则设置当前页为最大页
-        if(queryParam.getPageNum() > contestPagination.getTotalPage()) {
-            queryParam.setPageNum(contestPagination.getTotalPage());
-        }
-        contestPagination.setPageNum(queryParam.getPageNum());
+            // 4. 如果查询页号超过页数，则设置当前页为最大页
+            if (queryParam.getPageNum() > contestPagination.getTotalPage()) {
+                queryParam.setPageNum(contestPagination.getTotalPage());
+            }
+            contestPagination.setPageNum(queryParam.getPageNum());
 
-        queryMap.put("offset", queryParam.getOffset());
-        queryMap.put("limit", queryParam.getLimit());
+            queryMap.put("offset", queryParam.getOffset());
+            queryMap.put("limit", queryParam.getLimit());
 
-        // 5. 若存在数据，则获取本页数据
-        if(totalCount != 0) {
-            contestPagination.setData(contestDao.pageContestByQueryMap(queryMap));
+            // 5. 若存在数据，则获取本页数据
+            if (totalCount != 0) {
+                contestPagination.setData(contestDao.pageContestByQueryMap(queryMap));
+            }
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
         }
 
         return contestPagination;

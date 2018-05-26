@@ -2,6 +2,7 @@ package cn.idealismxxm.onlinejudge.web.controller;
 
 import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
+import cn.idealismxxm.onlinejudge.domain.entity.UserPrivilege;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 用户权限相关操作
@@ -57,6 +61,24 @@ public class UserPrivilegeController {
         User user = (User) RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         String updator = user.getUsername();
         Boolean result = userPrivilegeService.cancelUserPrivilege(userPrivilegeId, updator);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
+    }
+
+    /**
+     * 列出某用户的对于所有权限拥关系的信息列表
+     *
+     * @param username  用户名
+     * @return 信息列表
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PRIVILEGE})
+    @ResponseBody
+    @RequestMapping(value = "list", method = {RequestMethod.POST})
+    public AjaxResult<Map<String, Object>> list(String username) {
+        List<UserPrivilege> userPrivileges = userPrivilegeService.listAllPrivilegeInfo(username);
+        List<PrivilegeEnum> privilegeEnums = PrivilegeEnum.getEditablePrivilegeEnums();
+        Map<String, Object> result = new HashMap<>(4);
+        result.put("userPrivileges", userPrivileges);
+        result.put("privilegeEnums", privilegeEnums);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
 }
