@@ -38,11 +38,11 @@
         <include refid="contest_Column" />
         from contest
         <where>
-            <if test="endTime != null "> and contest.end_time = #{endTime,jdbcType=DATE}</if>
+            <if test="endTime != null "> and contest.end_time = #{endTime,jdbcType=TIMESTAMP}</if>
             <if test="name != null "> and contest.name = #{name,jdbcType=VARCHAR}</if>
             <if test="creator != null "> and contest.creator = #{creator,jdbcType=VARCHAR}</if>
             <if test="problemIds != null "> and contest.problem_ids = #{problemIds,jdbcType=VARCHAR}</if>
-            <if test="startTime != null "> and contest.start_time = #{startTime,jdbcType=DATE}</if>
+            <if test="startTime != null "> and contest.start_time = #{startTime,jdbcType=TIMESTAMP}</if>
             <if test="id != null "> and contest.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select>
@@ -59,7 +59,7 @@
 
     <insert id="insertContest" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
         insert into contest(id,start_time,problem_ids,creator,name,end_time)
-        values(#{id,jdbcType=INTEGER},#{startTime,jdbcType=DATE},#{problemIds,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{endTime,jdbcType=DATE})
+        values(#{id,jdbcType=INTEGER},#{startTime,jdbcType=TIMESTAMP},#{problemIds,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{endTime,jdbcType=TIMESTAMP})
     </insert>
 
     <!-- 将Contest中属性值不为null的数据,插入到对应数据库的表中-->
@@ -75,11 +75,11 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null"> #{id,jdbcType=INTEGER},</if>
-            <if test="startTime != null"> #{startTime,jdbcType=DATE},</if>
+            <if test="startTime != null"> #{startTime,jdbcType=TIMESTAMP},</if>
             <if test="problemIds != null"> #{problemIds,jdbcType=VARCHAR},</if>
             <if test="creator != null"> #{creator,jdbcType=VARCHAR},</if>
             <if test="name != null"> #{name,jdbcType=VARCHAR},</if>
-            <if test="endTime != null"> #{endTime,jdbcType=DATE},</if>
+            <if test="endTime != null"> #{endTime,jdbcType=TIMESTAMP},</if>
         </trim>
     </insert>
 
@@ -87,7 +87,7 @@
     <insert id="insertContestByBatch" parameterType="ArrayList">
         insert into contest(id,start_time,problem_ids,creator,name,end_time) values
         <foreach collection="list" item="item" index="index" separator="," >
-            (#{item.id,jdbcType=INTEGER},#{item.startTime,jdbcType=DATE},#{item.problemIds,jdbcType=VARCHAR},#{item.creator,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.endTime,jdbcType=DATE})
+            (#{item.id,jdbcType=INTEGER},#{item.startTime,jdbcType=TIMESTAMP},#{item.problemIds,jdbcType=VARCHAR},#{item.creator,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.endTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -100,11 +100,11 @@
     <!-- 通过Contest的id将Contest的数据更新到数据库中对应的表,包括值null的数据-->
     <update id="updateContestById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Contest">
         update contest set
-        start_time=#{startTime,jdbcType=DATE}
+        start_time=#{startTime,jdbcType=TIMESTAMP}
         ,problem_ids=#{problemIds,jdbcType=VARCHAR}
         ,creator=#{creator,jdbcType=VARCHAR}
         ,name=#{name,jdbcType=VARCHAR}
-        ,end_time=#{endTime,jdbcType=DATE}
+        ,end_time=#{endTime,jdbcType=TIMESTAMP}
         where id=#{id,jdbcType=INTEGER}
     </update>
 
@@ -113,7 +113,7 @@
         update contest
         <set>
             <if test="startTime != null">
-                start_time=#{startTime,jdbcType=DATE},
+                start_time=#{startTime,jdbcType=TIMESTAMP},
             </if>
             <if test="problemIds != null">
                 problem_ids=#{problemIds,jdbcType=VARCHAR},
@@ -125,7 +125,7 @@
                 name=#{name,jdbcType=VARCHAR},
             </if>
             <if test="endTime != null">
-                end_time=#{endTime,jdbcType=DATE},
+                end_time=#{endTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id=#{id,jdbcType=INTEGER}

@@ -64,12 +64,12 @@
             <if test="remoteSubmissionId != null "> and submission.remote_submission_id = #{remoteSubmissionId,jdbcType=INTEGER}</if>
             <if test="result != null "> and submission.result = #{result,jdbcType=TINYINT}</if>
             <if test="source != null "> and submission.source = #{source,jdbcType=VARCHAR}</if>
-            <if test="submittedTime != null "> and submission.submitted_time = #{submittedTime,jdbcType=DATE}</if>
+            <if test="submittedTime != null "> and submission.submitted_time = #{submittedTime,jdbcType=TIMESTAMP}</if>
             <if test="language != null "> and submission.language = #{language,jdbcType=INTEGER}</if>
             <if test="publicStatus != null "> and submission.public_status = #{publicStatus,jdbcType=TINYINT}</if>
             <if test="memory != null "> and submission.memory = #{memory,jdbcType=INTEGER}</if>
             <if test="extension != null "> and submission.extension = #{extension,jdbcType=VARCHAR}</if>
-            <if test="updatedTime != null "> and submission.updated_time = #{updatedTime,jdbcType=DATE}</if>
+            <if test="updatedTime != null "> and submission.updated_time = #{updatedTime,jdbcType=TIMESTAMP}</if>
             <if test="id != null "> and submission.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select> 
@@ -111,12 +111,12 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null"> #{id,jdbcType=INTEGER},</if>
-            <if test="updatedTime != null"> #{updatedTime,jdbcType=DATE},</if>
+            <if test="updatedTime != null"> #{updatedTime,jdbcType=TIMESTAMP},</if>
             <if test="extension != null"> #{extension,jdbcType=VARCHAR},</if>
             <if test="memory != null"> #{memory,jdbcType=INTEGER},</if>
             <if test="publicStatus != null"> #{publicStatus,jdbcType=TINYINT},</if>
             <if test="language != null"> #{language,jdbcType=INTEGER},</if>
-            <if test="submittedTime != null"> #{submittedTime,jdbcType=DATE},</if>
+            <if test="submittedTime != null"> #{submittedTime,jdbcType=TIMESTAMP},</if>
             <if test="source != null"> #{source,jdbcType=VARCHAR},</if>
             <if test="result != null"> #{result,jdbcType=TINYINT},</if>
             <if test="remoteSubmissionId != null"> #{remoteSubmissionId,jdbcType=INTEGER},</if>
@@ -132,7 +132,7 @@
     <insert id="insertSubmissionByBatch" parameterType="ArrayList">
         insert into submission(id,updated_time,extension,memory,public_status,language,submitted_time,source,result,remote_submission_id,problem_id,time,visible_status,username,remote_account_id) values
         <foreach collection="list" item="item" index="index" separator="," >
-            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.extension,jdbcType=VARCHAR},#{item.memory,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.language,jdbcType=INTEGER},#{item.submittedTime,jdbcType=DATE},#{item.source,jdbcType=VARCHAR},#{item.result,jdbcType=TINYINT},#{item.remoteSubmissionId,jdbcType=INTEGER},#{item.problemId,jdbcType=INTEGER},#{item.time,jdbcType=INTEGER},#{item.visibleStatus,jdbcType=TINYINT},#{item.username,jdbcType=VARCHAR},#{item.remoteAccountId,jdbcType=INTEGER})
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=TIMESTAMP},#{item.extension,jdbcType=VARCHAR},#{item.memory,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.language,jdbcType=INTEGER},#{item.submittedTime,jdbcType=TIMESTAMP},#{item.source,jdbcType=VARCHAR},#{item.result,jdbcType=TINYINT},#{item.remoteSubmissionId,jdbcType=INTEGER},#{item.problemId,jdbcType=INTEGER},#{item.time,jdbcType=INTEGER},#{item.visibleStatus,jdbcType=TINYINT},#{item.username,jdbcType=VARCHAR},#{item.remoteAccountId,jdbcType=INTEGER})
         </foreach>
     </insert>
 
@@ -145,12 +145,12 @@
     <!-- 通过Submission的id将Submission的数据更新到数据库中对应的表,包括值null的数据-->
     <update id="updateSubmissionById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Submission">
         update submission set
-            updated_time=#{updatedTime,jdbcType=DATE}
+            updated_time=#{updatedTime,jdbcType=TIMESTAMP}
             ,extension=#{extension,jdbcType=VARCHAR}
             ,memory=#{memory,jdbcType=INTEGER}
             ,public_status=#{publicStatus,jdbcType=TINYINT}
             ,language=#{language,jdbcType=INTEGER}
-            ,submitted_time=#{submittedTime,jdbcType=DATE}
+            ,submitted_time=#{submittedTime,jdbcType=TIMESTAMP}
             ,source=#{source,jdbcType=VARCHAR}
             ,result=#{result,jdbcType=TINYINT}
             ,remote_submission_id=#{remoteSubmissionId,jdbcType=INTEGER}
@@ -167,7 +167,7 @@
         update submission
         <set>
             <if test="updatedTime != null">
-                updated_time=#{updatedTime,jdbcType=DATE},
+                updated_time=#{updatedTime,jdbcType=TIMESTAMP},
             </if>
             <if test="extension != null">
                 extension=#{extension,jdbcType=VARCHAR},
@@ -182,7 +182,7 @@
                 language=#{language,jdbcType=INTEGER},
             </if>
             <if test="submittedTime != null">
-                submitted_time=#{submittedTime,jdbcType=DATE},
+                submitted_time=#{submittedTime,jdbcType=TIMESTAMP},
             </if>
             <if test="source != null">
                 source=#{source,jdbcType=VARCHAR},
