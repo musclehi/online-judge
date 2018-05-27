@@ -42,7 +42,7 @@
             <if test="email != null "> and user.email = #{email,jdbcType=VARCHAR}</if>
             <if test="nickname != null "> and user.nickname = #{nickname,jdbcType=VARCHAR}</if>
             <if test="password != null "> and user.password = #{password,jdbcType=VARCHAR}</if>
-            <if test="updatedTime != null "> and user.updated_time = #{updatedTime,jdbcType=DATE}</if>
+            <if test="updatedTime != null "> and user.updated_time = #{updatedTime,jdbcType=TIMESTAMP}</if>
             <if test="id != null "> and user.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select>
@@ -87,7 +87,7 @@
     <insert id="insertUserByBatch" parameterType="ArrayList">
         insert into user(id,updated_time,password,nickname,email,username) values
         <foreach collection="list" item="item" index="index" separator="," >
-            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.password,jdbcType=VARCHAR},#{item.nickname,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR},#{item.username,jdbcType=VARCHAR})
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=TIMESTAMP},#{item.password,jdbcType=VARCHAR},#{item.nickname,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR},#{item.username,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -100,7 +100,7 @@
     <!-- 通过User的id将User的数据更新到数据库中对应的表,包括值null的数据-->
     <update id="updateUserById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.User">
         update user set
-        updated_time=#{updatedTime,jdbcType=DATE}
+        updated_time=#{updatedTime,jdbcType=TIMESTAMP}
         ,password=#{password,jdbcType=VARCHAR}
         ,nickname=#{nickname,jdbcType=VARCHAR}
         ,email=#{email,jdbcType=VARCHAR}
@@ -113,7 +113,7 @@
         update user
         <set>
             <if test="updatedTime != null">
-                updated_time=#{updatedTime,jdbcType=DATE},
+                updated_time=#{updatedTime,jdbcType=TIMESTAMP},
             </if>
             <if test="password != null">
                 password=#{password,jdbcType=VARCHAR},

@@ -58,7 +58,7 @@
             <if test="publicStatus != null ">and problem.public_status = #{publicStatus,jdbcType=TINYINT}</if>
             <if test="descriptionId != null ">and problem.description_id = #{descriptionId,jdbcType=INTEGER}</if>
             <if test="timeLimit != null ">and problem.time_limit = #{timeLimit,jdbcType=INTEGER}</if>
-            <if test="updatedTime != null ">and problem.updated_time = #{updatedTime,jdbcType=DATE}</if>
+            <if test="updatedTime != null ">and problem.updated_time = #{updatedTime,jdbcType=TIMESTAMP}</if>
             <if test="id != null ">and problem.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select>
@@ -115,7 +115,7 @@
         problem(id,updated_time,time_limit,description_id,public_status,tag,memory_limit,title,original_oj,original_id,url)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=DATE},#{item.timeLimit,jdbcType=INTEGER},#{item.descriptionId,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.tag,jdbcType=VARCHAR},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.originalOj,jdbcType=SMALLINT},#{item.originalId,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR})
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=TIMESTAMP},#{item.timeLimit,jdbcType=INTEGER},#{item.descriptionId,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.tag,jdbcType=VARCHAR},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.originalOj,jdbcType=SMALLINT},#{item.originalId,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -128,7 +128,7 @@
     <!-- 通过Problem的id将Problem的数据更新到数据库中对应的表,包括值null的数据-->
     <update id="updateProblemById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem">
         update problem set
-        updated_time=#{updatedTime,jdbcType=DATE}
+        updated_time=#{updatedTime,jdbcType=TIMESTAMP}
         ,time_limit=#{timeLimit,jdbcType=INTEGER}
         ,description_id=#{descriptionId,jdbcType=INTEGER}
         ,public_status=#{publicStatus,jdbcType=TINYINT}
@@ -146,7 +146,7 @@
         update problem
         <set>
             <if test="updatedTime != null">
-                updated_time=#{updatedTime,jdbcType=DATE},
+                updated_time=#{updatedTime,jdbcType=TIMESTAMP},
             </if>
             <if test="timeLimit != null">
                 time_limit=#{timeLimit,jdbcType=INTEGER},

@@ -42,7 +42,7 @@
             <if test="privilege != null "> and user_privilege.privilege = #{privilege,jdbcType=INTEGER}</if>
             <if test="updator != null "> and user_privilege.updator = #{updator,jdbcType=VARCHAR}</if>
             <if test="deletedStatus != null "> and user_privilege.deleted_status = #{deletedStatus,jdbcType=TINYINT}</if>
-            <if test="updatedTime != null "> and user_privilege.updated_time = #{updatedTime,jdbcType=DATE}</if>
+            <if test="updatedTime != null "> and user_privilege.updated_time = #{updatedTime,jdbcType=TIMESTAMP}</if>
             <if test="id != null "> and user_privilege.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select> 
