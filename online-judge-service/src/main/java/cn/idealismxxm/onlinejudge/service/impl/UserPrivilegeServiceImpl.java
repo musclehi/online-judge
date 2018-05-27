@@ -106,7 +106,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
         }
 
         // 3. 若用户权限实例存在，且已逻辑删除，则更新其删除状态为有效
-        if (DeletedStatusEnum.DELETED.getCode().equals(userPrivilege.getPrivilege())) {
+        if (DeletedStatusEnum.DELETED.getCode().equals(userPrivilege.getDeletedStatus())) {
             userPrivilege.setUpdator(updator);
             userPrivilege.setDeletedStatus(DeletedStatusEnum.VALID.getCode());
 
