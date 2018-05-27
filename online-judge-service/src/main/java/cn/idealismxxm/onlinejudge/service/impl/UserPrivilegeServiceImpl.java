@@ -172,6 +172,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
                 item.setId(userPrivilege.getId());
                 item.setDeletedStatus(userPrivilege.getDeletedStatus());
             }
+            result.add(item);
         });
 
         return result;

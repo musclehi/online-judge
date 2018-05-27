@@ -26,7 +26,7 @@ import java.util.Map;
  * @date 2018/5/22
  */
 @Controller
-@RequestMapping("user")
+@RequestMapping("userPrivilege")
 public class UserPrivilegeController {
     @Resource
     private UserPrivilegeService userPrivilegeService;
@@ -72,7 +72,7 @@ public class UserPrivilegeController {
      */
     @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PRIVILEGE})
     @ResponseBody
-    @RequestMapping(value = "list", method = {RequestMethod.POST})
+    @RequestMapping(value = "list", method = {RequestMethod.GET})
     public AjaxResult<Map<String, Object>> list(String username) {
         List<UserPrivilege> userPrivileges = userPrivilegeService.listAllPrivilegeInfo(username);
         List<PrivilegeEnum> privilegeEnums = PrivilegeEnum.getEditablePrivilegeEnums();
