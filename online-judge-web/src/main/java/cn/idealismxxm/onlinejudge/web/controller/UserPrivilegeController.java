@@ -51,7 +51,7 @@ public class UserPrivilegeController {
     /**
      * 取消权限
      *
-     * @param userPrivilegeId  用户权限id
+     * @param userPrivilegeId 用户权限id
      * @return true / false
      */
     @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PRIVILEGE})
@@ -67,7 +67,7 @@ public class UserPrivilegeController {
     /**
      * 列出某用户的对于所有权限拥关系的信息列表
      *
-     * @param username  用户名
+     * @param username 用户名
      * @return 信息列表
      */
     @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PRIVILEGE})
@@ -80,5 +80,19 @@ public class UserPrivilegeController {
         result.put("userPrivileges", userPrivileges);
         result.put("privilegeEnums", privilegeEnums);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
+    }
+
+    /**
+     * 列出当前用户的对于所有权限拥关系的信息列表
+     *
+     * @return 信息列表
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
+    @ResponseBody
+    @RequestMapping(value = "listCurrentUserPrivilege", method = {RequestMethod.GET})
+    public AjaxResult<List<UserPrivilege>> listCurrentUserPrivilege() {
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        List<UserPrivilege> userPrivileges = userPrivilegeService.listAllPrivilegeInfo(user.getUsername());
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), userPrivileges);
     }
 }
