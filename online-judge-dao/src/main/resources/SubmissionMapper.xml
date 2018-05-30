@@ -217,8 +217,8 @@
         SELECT COUNT(id)
         FROM submission
         <where>
-            AND visible_status = #{visibleStatus, jdbcType = INTEGER},
-            <if test="result != null ">AND submission.result = #{username, jdbcType = INTEGER}</if>
+            AND visible_status = #{visibleStatus, jdbcType = INTEGER}
+            <if test="result != null ">AND submission.result = #{result, jdbcType = INTEGER}</if>
             <if test="language != null ">AND submission.language = #{language, jdbcType = INTEGER}</if>
             <if test="username != null ">AND submission.username LIKE "%"#{username, jdbcType = VARCHAR}"%"</if>
         </where>
