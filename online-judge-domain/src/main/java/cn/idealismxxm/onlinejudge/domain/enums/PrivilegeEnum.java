@@ -15,6 +15,7 @@ public enum PrivilegeEnum {
     MANAGE_PRIVILEGE(2, "管理权限"),
     MANAGE_PROBLEM(3, "管理题目"),
     MANAGE_CONTEST(4, "管理比赛"),
+    MANAGE_TAG(5, "管理标签"),
     ;
 
     /**

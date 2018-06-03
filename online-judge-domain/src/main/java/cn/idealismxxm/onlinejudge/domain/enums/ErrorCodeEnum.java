@@ -40,6 +40,7 @@ public enum ErrorCodeEnum {
 
     USER_PRIVILEGE_ALREADY_CANCEL("0026", "用户权限已取消"),
     USER_PRIVILEGE_NOT_ENOUGH("0027", "用户权限不足"),
+    TAG_NOT_EXIST("0028", "标签不存在"),
 
     UNKNOWN("9999", "未知错误"),
     ;
