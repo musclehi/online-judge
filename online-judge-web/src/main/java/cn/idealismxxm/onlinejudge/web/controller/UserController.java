@@ -4,6 +4,7 @@ import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
+import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * 用户相关操作
@@ -78,5 +77,21 @@ public class UserController {
     public AjaxResult<Boolean> signOut() {
         RequestUtil.removeAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), true);
+    }
+
+    /**
+     * 列出当前用户的信息
+     *
+     * @return 用户信息
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN})
+    @ResponseBody
+    @RequestMapping(value = "getCurrentUserInfo", method = {RequestMethod.GET})
+    public AjaxResult<User> getCurrentUserInfo() {
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        // 获取最新数据，并去除敏感信息
+        user = userService.getUserByUsername(user.getUsername());
+        user.setPassword(null);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), user);
     }
 }

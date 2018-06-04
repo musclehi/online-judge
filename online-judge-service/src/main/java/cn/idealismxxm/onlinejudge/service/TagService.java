@@ -4,6 +4,8 @@ import cn.idealismxxm.onlinejudge.domain.entity.Tag;
 import cn.idealismxxm.onlinejudge.domain.util.Pagination;
 import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 
+import java.util.List;
+
 /**
  * 标签接口
  *
@@ -54,4 +56,12 @@ public interface TagService {
      * @return 标签列表分页封装
      */
     Pagination<Tag> pageTagByQueryParam(QueryParam queryParam);
+
+    /**
+     * 获取标签id 在 ids中的 标签列表
+     *
+     * @param ids id列表
+     * @return 标签列表
+     */
+    List<Tag> listTagByIds(List<Integer> ids);
 }

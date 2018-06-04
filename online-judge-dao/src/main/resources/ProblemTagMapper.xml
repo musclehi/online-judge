@@ -4,7 +4,7 @@
     <!-- ProblemTag的resultMap,column是给数据库列起的别名,它对应property类的属性-->
     <resultMap id="result_ProblemTag_Map" type="cn.idealismxxm.onlinejudge.domain.entity.ProblemTag">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="updated_time" jdbcType="TIMPSTAMP" property="updatedTime" />
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
         <result column="deleted_status" jdbcType="TINYINT" property="deletedStatus" />
         <result column="problem_id" jdbcType="INTEGER" property="problemId" />
         <result column="tag_id" jdbcType="INTEGER" property="tagId" />
@@ -42,7 +42,7 @@
             <if test="tagId != null "> and problem_tag.tag_id = #{tagId,jdbcType=INTEGER}</if>
             <if test="problemId != null "> and problem_tag.problem_id = #{problemId,jdbcType=INTEGER}</if>
             <if test="deletedStatus != null "> and problem_tag.deleted_status = #{deletedStatus,jdbcType=TINYINT}</if>
-            <if test="updatedTime != null "> and problem_tag.updated_time = #{updatedTime,jdbcType=TIMPSTAMP}</if>
+            <if test="updatedTime != null "> and problem_tag.updated_time = #{updatedTime,jdbcType=TIMESTAMP}</if>
             <if test="id != null "> and problem_tag.id = #{id,jdbcType=INTEGER}</if>
         </where>
     </select> 
@@ -129,4 +129,22 @@
         where id=#{id,jdbcType=INTEGER}
     </update>
 
+    <!-- 通过 题目id 和 标签id 获取题目标签关系实例 -->
+    <select id="getProblemTagByProblemIdAndTagId" parameterType="java.lang.Integer" resultMap="result_ProblemTag_Map">
+        SELECT
+        <include refid="problem_tag_Column" />
+        FROM problem_tag
+        WHERE problem_id = #{problemId, jdbcType=INTEGER}
+            AND tag_id = #{tagId, jdbcType=INTEGER}
+    </select>
+
+    <!-- 列出 题目id 下 删除状态 为 deleteStatus 的所有标签 -->
+    <select id="listTagIdByProblemIdAndDeletedStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT tag_id
+        FROM problem_tag
+        WHERE problem_id = #{problemId, jdbcType=INTEGER}
+            <if test="deletedStatus != null">
+                AND deleted_status = #{deletedStatus,jdbcType=TINYINT},
+            </if>
+    </select>
 </mapper>

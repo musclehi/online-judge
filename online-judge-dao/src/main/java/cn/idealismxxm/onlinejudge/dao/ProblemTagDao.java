@@ -1,5 +1,7 @@
 package cn.idealismxxm.onlinejudge.dao;
 import cn.idealismxxm.onlinejudge.domain.entity.ProblemTag;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 public interface ProblemTagDao{
 	/**
@@ -60,4 +62,22 @@ public interface ProblemTagDao{
 	 * @return
 	 */
     int updateNonEmptyProblemTagById(ProblemTag enti);
+
+    /**
+     * 通过 题目id 和 标签id 获取题目标签关系实例
+     *
+     * @param problemId 题目id
+     * @param tagId     标签id
+     * @return 题目标签关系实例
+     */
+    ProblemTag getProblemTagByProblemIdAndTagId(@Param("problemId") Integer problemId, @Param("tagId") Integer tagId);
+
+    /**
+     * 列出 题目id 下 删除状态 为 deleteStatus 的所有标签
+     *
+     * @param problemId     题目id
+     * @param deletedStatus 删除状态（null 表示查询所有标签）
+     * @return 标签列表
+     */
+    List<Integer> listTagIdByProblemIdAndDeletedStatus(@Param("problemId") Integer problemId, @Param("deletedStatus") Integer deletedStatus);
 }

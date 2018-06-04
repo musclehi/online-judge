@@ -24,4 +24,12 @@ public interface UserService {
      * @return 用户实例
      */
     User getUserByAccountAndPassword(String account, String password);
+
+    /**
+     * 通过 用户名 返回用户实例
+     *
+     * @param username 用户名
+     * @return 用户实例
+     */
+    User getUserByUsername(String username);
 }

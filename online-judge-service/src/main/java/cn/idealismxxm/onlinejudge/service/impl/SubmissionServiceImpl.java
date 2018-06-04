@@ -88,6 +88,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             submission.setResult(ResultEnum.QUEUING.getCode());
             // 题库提交默认全部可见
             submission.setVisibleStatus(VisibleStatusEnum.VISIBLE.getCode());
+            // TODO 去除
             // 移除不可见字符
             submission.setSource(submission.getSource().replaceAll("\u200B", ""));
 

@@ -73,7 +73,7 @@ public enum PrivilegeEnum {
      * @param code 权限 代码
      * @return 权限 枚举类型
      */
-    public static PrivilegeEnum getLanguageEnumByCode(Integer code) {
+    public static PrivilegeEnum getPrivilegeEnumByCode(Integer code) {
         for (PrivilegeEnum privilegeEnum : PrivilegeEnum.values()) {
             if (privilegeEnum.getCode().equals(code)) {
                 return privilegeEnum;

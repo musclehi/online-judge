@@ -1,17 +1,15 @@
 package cn.idealismxxm.onlinejudge.web.controller;
 
 import cn.idealismxxm.onlinejudge.domain.annotation.RequirePrivilege;
-import cn.idealismxxm.onlinejudge.domain.entity.Description;
-import cn.idealismxxm.onlinejudge.domain.entity.Problem;
-import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
+import cn.idealismxxm.onlinejudge.domain.entity.*;
+import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
+import cn.idealismxxm.onlinejudge.domain.enums.DeletedStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.PrivilegeEnum;
-import cn.idealismxxm.onlinejudge.domain.util.AjaxResult;
-import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
-import cn.idealismxxm.onlinejudge.domain.util.Pagination;
-import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
+import cn.idealismxxm.onlinejudge.domain.util.*;
 import cn.idealismxxm.onlinejudge.service.DescriptionService;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
+import cn.idealismxxm.onlinejudge.service.ProblemTagService;
 import cn.idealismxxm.onlinejudge.service.TestCaseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +38,9 @@ public class ProblemController {
 
     @Resource
     private TestCaseService testCaseService;
+
+    @Resource
+    private ProblemTagService problemTagService;
 
     /**
      * 添加题目
@@ -131,6 +132,51 @@ public class ProblemController {
     public AjaxResult<Pagination<Problem>> list(String queryParamJson) {
         QueryParam queryParam = JsonUtil.jsonToObject(queryParamJson, QueryParam.class);
         Pagination<Problem> result = problemService.pageProblemByQueryParam(queryParam);
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
+    }
+
+    /**
+     * 列出 题目id 下的所有标签
+     *
+     * @param problemId 题目id
+     * @return 标签列表
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PROBLEM})
+    @ResponseBody
+    @RequestMapping(value = "listTagByProblemId", method = {RequestMethod.POST})
+    public AjaxResult<List<Tag>> listTagByProblemId(Integer problemId) {
+        List<Tag> tags = problemTagService.listTagByProblemIdAndDeletedStatus(problemId, DeletedStatusEnum.VALID.getCode());
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), tags);
+    }
+
+    /**
+     * 添加题目标签关系
+     *
+     * @param problemId 题目id
+     * @param tagId     标签id
+     * @return 题目标签关系id
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PROBLEM})
+    @ResponseBody
+    @RequestMapping(value = "addProblemTag", method = {RequestMethod.POST})
+    public AjaxResult<Integer> addProblemTag(Integer problemId, Integer tagId) {
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        Integer id = problemTagService.addProblemTag(problemId, tagId, user.getUsername());
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), id);
+    }
+
+    /**
+     * 删除题目标签关系
+     *
+     * @param problemTagId 题目标签关系id
+     * @return true / false
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PROBLEM})
+    @ResponseBody
+    @RequestMapping(value = "deleteProblemTag", method = {RequestMethod.POST})
+    public AjaxResult<Boolean> deleteProblemTag(Integer problemTagId) {
+        User user = RequestUtil.getAttribute(CommonConstant.SESSION_ATTRIBUTE_USER);
+        Boolean result = problemTagService.deleteProblemTag(problemTagId, user.getUsername());
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
 }

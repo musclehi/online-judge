@@ -78,4 +78,12 @@ public interface TagDao{
 	 * @return 标签列表
 	 */
 	List<Tag> pageTagByQueryMap(Map<String, Object> queryMap);
+
+    /**
+     * 获取 主键 在 ids中的 标签列表
+     *
+     * @param ids id列表
+     * @return 标签列表
+     */
+    List<Tag> listTagByIds(List<Integer> ids);
 }

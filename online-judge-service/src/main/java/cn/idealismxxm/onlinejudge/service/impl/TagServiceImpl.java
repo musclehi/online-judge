@@ -7,13 +7,16 @@ import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.Pagination;
 import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.service.TagService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -164,5 +167,18 @@ public class TagServiceImpl implements TagService {
         }
 
         return tagPagination;
+    }
+
+    @Override
+    public List<Tag> listTagByIds(List<Integer> ids) {
+        if(CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>(0);
+        }
+
+        try {
+            return tagDao.listTagByIds(ids);
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
+        }
     }
 }
