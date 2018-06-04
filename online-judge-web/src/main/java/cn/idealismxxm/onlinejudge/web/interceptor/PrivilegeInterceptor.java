@@ -101,7 +101,7 @@ public class PrivilegeInterceptor implements HandlerInterceptor {
         userPrivileges.forEach(userPrivilege -> {
             // 若当前权限未被逻辑删除，则所需权限枚举列表中去除该权限
             if (DeletedStatusEnum.VALID.getCode().equals(userPrivilege.getDeletedStatus())) {
-                privilegeEnums.remove(PrivilegeEnum.getLanguageEnumByCode(userPrivilege.getPrivilege()));
+                privilegeEnums.remove(PrivilegeEnum.getPrivilegeEnumByCode(userPrivilege.getPrivilege()));
             }
         });
 

@@ -2,6 +2,7 @@ package cn.idealismxxm.onlinejudge.service.impl;
 
 import cn.idealismxxm.onlinejudge.dao.ContestDao;
 import cn.idealismxxm.onlinejudge.domain.entity.Contest;
+import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.User;
 import cn.idealismxxm.onlinejudge.domain.enums.CommonConstant;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
@@ -11,6 +12,8 @@ import cn.idealismxxm.onlinejudge.domain.util.Pagination;
 import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.domain.util.RequestUtil;
 import cn.idealismxxm.onlinejudge.service.ContestService;
+import cn.idealismxxm.onlinejudge.service.ProblemService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +37,9 @@ public class ContestServiceImpl implements ContestService {
 
     @Resource
     private ContestDao contestDao;
+
+    @Resource
+    private ProblemService problemService;
 
     @Override
     public Contest getContestById(Integer id) {
@@ -158,6 +165,21 @@ public class ContestServiceImpl implements ContestService {
         long duration = contest.getEndTime().getTime() - contest.getStartTime().getTime();
         if(duration < CommonConstant.CONTEST_MIN_DURATION) {
             throw BusinessException.buildCustomizedMessageException(String.format("比赛最少持续%d小时", CommonConstant.CONTEST_MIN_DURATION / 1000 / 60 / 60));
+        }
+
+        // 校验比赛题目字段是否合法
+        List<Integer> problemIds = JsonUtil.jsonToList(contest.getProblemIds(), Integer.class);
+        if(CollectionUtils.isEmpty(problemIds)) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+        List<Problem> problems;
+        try {
+            problems = problemService.listProblemByIds(problemIds);
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR);
+        }
+        if(problemIds.size() != problems.size()) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
     }
 }

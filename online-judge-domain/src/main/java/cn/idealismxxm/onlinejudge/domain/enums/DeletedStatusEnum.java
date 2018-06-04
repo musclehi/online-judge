@@ -32,4 +32,19 @@ public enum DeletedStatusEnum {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * 通过 删除状态 代码 返回 删除状态 枚举类型
+     *
+     * @param code 权限 代码
+     * @return 权限 枚举类型
+     */
+    public static DeletedStatusEnum getDeletedStatusEnumByCode(Integer code) {
+        for (DeletedStatusEnum deletedStatusEnum : DeletedStatusEnum.values()) {
+            if (deletedStatusEnum.getCode().equals(code)) {
+                return deletedStatusEnum;
+            }
+        }
+        return null;
+    }
 }

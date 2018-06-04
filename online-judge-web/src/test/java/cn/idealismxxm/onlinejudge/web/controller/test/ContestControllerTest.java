@@ -104,6 +104,23 @@ public class ContestControllerTest {
         }
     }
 
+    @Test
+    public void getTest() {
+        Integer contestId = 1;
+        try {
+            String responseString = mockMvc.perform(get("/contest/get")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("contestId", contestId.toString())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 初始化测试用的比赛信息
      *

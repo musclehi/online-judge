@@ -15,6 +15,7 @@ public enum PrivilegeEnum {
     MANAGE_PRIVILEGE(2, "管理权限"),
     MANAGE_PROBLEM(3, "管理题目"),
     MANAGE_CONTEST(4, "管理比赛"),
+    MANAGE_TAG(5, "管理标签"),
     ;
 
     /**
@@ -72,7 +73,7 @@ public enum PrivilegeEnum {
      * @param code 权限 代码
      * @return 权限 枚举类型
      */
-    public static PrivilegeEnum getLanguageEnumByCode(Integer code) {
+    public static PrivilegeEnum getPrivilegeEnumByCode(Integer code) {
         for (PrivilegeEnum privilegeEnum : PrivilegeEnum.values()) {
             if (privilegeEnum.getCode().equals(code)) {
                 return privilegeEnum;

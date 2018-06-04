@@ -84,4 +84,25 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public User getUserByUsername(String username) {
+        // 1. 参数校验
+        RegexEnum.USERNAME.validate(username);
+
+        // 2. 获取用户实例
+        User user;
+        try {
+            user = userDao.getUserByUsername(username);
+        } catch (Exception e) {
+            LOGGER.error("#getUserByUsername error, username: {}", username, e);
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
+        }
+
+        // 验证数据是否存在
+        if (user == null) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.USER_NOT_EXIST);
+        }
+        return user;
+    }
 }

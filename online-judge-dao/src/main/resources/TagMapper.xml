@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.idealismxxm.onlinejudge.dao.TagDao">
+    <!-- Tag的resultMap,column是给数据库列起的别名,它对应property类的属性-->
+    <resultMap id="result_Tag_Map" type="cn.idealismxxm.onlinejudge.domain.entity.Tag">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+        <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="updator" jdbcType="VARCHAR" property="updator" />
+    </resultMap>
+
+    <!-- 数据库中表名为:tag的列名,as前是数据库的列明,as后是列的别名用于映射成实体类中的属性,需要注意的是别名必须与resultMap中的column别名一致 -->
+    <sql id="tag_Column">
+        tag.id as id
+        ,tag.updated_time as updated_time
+        ,tag.parent_id as parent_id
+        ,tag.name as name
+        ,tag.updator as updator
+    </sql>
+
+    <!--获得类名为:Tag对应的数据库表的数据总行数 -->
+    <select id="getTagRowCount" resultType="java.lang.Long">
+        select count(id) from tag
+    </select>
+    <!-- 获得类名为:Tag对应数据库中表的数据集合 -->
+    <select id="selectTag" resultMap="result_Tag_Map">
+        select 
+        <include refid="tag_Column" /> 
+        from tag
+    </select> 
+
+    <!-- 获得一个Tag对象,以参数Tag对象中不为空的属性作为条件进行查询-->
+    <select id="selectTagByObj" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Tag" resultMap="result_Tag_Map">
+        select 
+            <include refid="tag_Column" /> 
+        from tag
+        <where>
+            <if test="updator != null "> and tag.updator = #{updator,jdbcType=VARCHAR}</if>
+            <if test="name != null "> and tag.name = #{name,jdbcType=VARCHAR}</if>
+            <if test="parentId != null "> and tag.parent_id = #{parentId,jdbcType=INTEGER}</if>
+            <if test="updatedTime != null "> and tag.updated_time = #{updatedTime,jdbcType=TIMESTAMP}</if>
+            <if test="id != null "> and tag.id = #{id,jdbcType=INTEGER}</if>
+        </where>
+    </select> 
+
+    <!-- 通过Tag的id获得对应数据库中表的数据对象-->
+    <select id="selectTagById" parameterType="java.lang.Integer" resultMap="result_Tag_Map">
+        select 
+            <include refid="tag_Column" /> 
+        from tag
+        where tag.id = #{id,jdbcType=INTEGER}
+    </select> 
+
+    <!-- 将Tag插入到对应数据库的表中,包括属性值为null的数据-->
+
+    <insert id="insertTag" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Tag">
+        insert into tag(id,updated_time,parent_id,name,updator) 
+        values(#{id,jdbcType=INTEGER},now(),#{parentId,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{updator,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 将Tag中属性值不为null的数据,插入到对应数据库的表中-->
+    <insert id="insertNonEmptyTag" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Tag">
+        insert into tag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            updated_time,
+            <if test="parentId != null">parent_id,</if>
+            <if test="name != null">name,</if>
+            <if test="updator != null">updator,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id,jdbcType=INTEGER},</if>
+            now(),
+            <if test="parentId != null"> #{parentId,jdbcType=INTEGER},</if>
+            <if test="name != null"> #{name,jdbcType=VARCHAR},</if>
+            <if test="updator != null"> #{updator,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+
+    <!-- 将Tag批量插入到对应数据库的表中-->
+    <insert id="insertTagByBatch" parameterType="ArrayList">
+        insert into tag(id,updated_time,parent_id,name,updator) values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id,jdbcType=INTEGER},now(),#{item.parentId,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.updator,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 通过Tag的id将数据库表中对应的数据删除-->
+    <delete id="deleteTagById" parameterType="java.lang.Integer">
+        delete from tag
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 通过Tag的id将Tag的数据更新到数据库中对应的表,包括值null的数据-->
+    <update id="updateTagById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Tag">
+        update tag set
+            updated_time=now()
+            ,parent_id=#{parentId,jdbcType=INTEGER}
+            ,name=#{name,jdbcType=VARCHAR}
+            ,updator=#{updator,jdbcType=VARCHAR}
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 通过Tag的id将Tag中属性值不为null的数据更新到数据库对应的表中-->
+    <update id="updateNonEmptyTagById" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Tag">
+        update tag
+        <set>
+            updated_time=now(),
+            <if test="parentId != null">
+                parent_id=#{parentId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                name=#{name,jdbcType=VARCHAR},
+            </if>
+            <if test="updator != null">
+                updator=#{updator,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 统计 符合查询条件 的标签总数 -->
+    <select id="countTagByQueryMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM tag
+        <where>
+            <if test="parentId != null ">AND parent_id = #{parentId, jdbcType=INTEGER}"%"</if>
+            <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+        </where>
+    </select>
+
+    <!-- 分页查询 符合查询条件 的标签 -->
+    <select id="pageTagByQueryMap" parameterType="java.util.Map" resultMap="result_Tag_Map">
+        SELECT
+        <include refid="tag_Column"/>
+        FROM tag
+        <where>
+            <if test="parentId != null ">AND parent_id = #{parentId, jdbcType=INTEGER}"%"</if>
+            <if test="name != null ">AND name LIKE "%"#{name, jdbcType=VARCHAR}"%"</if>
+        </where>
+        <if test="limit != null">
+            <if test="offset != null">
+                LIMIT #{offset, jdbcType=INTEGER}, #{limit, jdbcType=INTEGER}
+            </if>
+            <if test="offset == null">
+                LIMIT #{limit, jdbcType=INTEGER}
+            </if>
+        </if>
+    </select>
+
+    <!-- 获取 主键 在 ids中的 标签列表 -->
+    <select id="listTagByIds" parameterType="java.util.List" resultMap="result_Tag_Map">
+        SELECT
+        <include refid="tag_Column"/>
+        FROM tag
+        WHERE
+        id IN
+        <foreach collection="list" index="index" item="id" open="(" separator="," close=")"> #{id, jdbcType=INTEGER} </foreach>
+    </select>
+</mapper>

@@ -54,7 +54,7 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
 
     @Override
     public UserPrivilege getUserPrivilegeByUsernameAndPrivilege(String username, Integer privilege) {
-        if (StringUtils.isBlank(username) || PrivilegeEnum.getLanguageEnumByCode(privilege) == null) {
+        if (StringUtils.isBlank(username) || PrivilegeEnum.getPrivilegeEnumByCode(privilege) == null) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
 

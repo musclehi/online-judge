@@ -73,7 +73,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
 
         // 获取题目信息
-        Problem problem = problemService.getProblemById(submission.getProblemId());
+        problemService.getProblemById(submission.getProblemId());
         try {
             // 设置提交者用户名
             submission.setUsername(username);
@@ -88,6 +88,9 @@ public class SubmissionServiceImpl implements SubmissionService {
             submission.setResult(ResultEnum.QUEUING.getCode());
             // 题库提交默认全部可见
             submission.setVisibleStatus(VisibleStatusEnum.VISIBLE.getCode());
+            // TODO 去除
+            // 移除不可见字符
+            submission.setSource(submission.getSource().replaceAll("\u200B", ""));
 
             // 数据入库
             submissionDao.insertSubmission(submission);
