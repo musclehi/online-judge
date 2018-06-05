@@ -150,6 +150,59 @@ public class ProblemControllerTest {
         }
     }
 
+    @Test
+    public void listTagByProblemIdTest() {
+        Integer problemId = 57;
+        try {
+            String responseString = mockMvc.perform(get("/problem/listTagByProblemId")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("problemId", problemId.toString())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void addProblemTagTest() {
+        Integer problemId = 57;
+        Integer tagId = 1;
+        try {
+            String responseString = mockMvc.perform(post("/problem/addProblemTag")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("problemId", problemId.toString())
+                    .param("tagId", tagId.toString())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void deleteProblemTagTest() {
+        Integer problemTagId = 1;
+        try {
+            String responseString = mockMvc.perform(post("/problem/addProblemTag")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .param("problemTagId", problemTagId.toString())
+            ).andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(responseString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 初始化测试用的题目
      *
@@ -163,7 +216,6 @@ public class ProblemControllerTest {
         problem.setTitle("题目标题");
         problem.setTimeLimit(2000);
         problem.setMemoryLimit(65535);
-        problem.setTag("");
         problem.setUrl(OnlineJudgeEnum.THIS.getUrl(""));
 
         return problem;
@@ -219,6 +271,7 @@ public class ProblemControllerTest {
         queryParam.put("pageSize", 20);
         Map<String, Object> param = new HashMap<>(2);
         param.put("title", "标题");
+        param.put("tagId", 1);
         queryParam.put("param", param);
 
         return queryParam;

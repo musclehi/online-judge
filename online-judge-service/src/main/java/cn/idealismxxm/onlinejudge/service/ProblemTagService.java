@@ -26,7 +26,7 @@ public interface ProblemTagService {
     /**
      * 列出 题目id 下 删除状态 为 deleteStatus 的所有标签
      *
-     * @param problemId 题目id
+     * @param problemId     题目id
      * @param deletedStatus 删除状态（null 表示查询所有标签）
      * @return 标签列表
      */
@@ -67,4 +67,14 @@ public interface ProblemTagService {
      * @return 题目标签关系实例
      */
     ProblemTag getProblemTagByProblemIdAndTagId(Integer problemId, Integer tagId);
+
+
+    /**
+     * 获取 拥有 tagId  的标签，且关系为 DeletedStatus 的题目id列表
+     *
+     * @param tagId 标签主键
+     * @param deletedStatus 删除状态（null 表示查询所有标签）
+     * @return 题目id列表
+     */
+    List<Integer> listProblemIdByTagIdAndDeletedStatus(Integer tagId, Integer deletedStatus);
 }

@@ -6,7 +6,6 @@ public class Problem implements java.io.Serializable {
     private Integer timeLimit;//题目时间限制（单位：ms）
     private Integer descriptionId;//题目描述id
     private Integer publicStatus;//公开状态（0：私密，1：公开）
-    private String tag;//题目标签
     private Integer memoryLimit;//题目空间限制（单位：KB）
     private String title;//题目标题
     private Integer originalOj;//原始OJ
@@ -15,14 +14,13 @@ public class Problem implements java.io.Serializable {
     public Problem() {
         super();
     }
-    public Problem(Integer id,java.util.Date updatedTime,Integer timeLimit,Integer descriptionId,Integer publicStatus,String tag,Integer memoryLimit,String title,Integer originalOj,String originalId,String url) {
+    public Problem(Integer id,java.util.Date updatedTime,Integer timeLimit,Integer descriptionId,Integer publicStatus,Integer memoryLimit,String title,Integer originalOj,String originalId,String url) {
         super();
         this.id = id;
         this.updatedTime = updatedTime;
         this.timeLimit = timeLimit;
         this.descriptionId = descriptionId;
         this.publicStatus = publicStatus;
-        this.tag = tag;
         this.memoryLimit = memoryLimit;
         this.title = title;
         this.originalOj = originalOj;
@@ -67,14 +65,6 @@ public class Problem implements java.io.Serializable {
 
     public void setPublicStatus(Integer publicStatus) {
         this.publicStatus = publicStatus;
-    }
-
-    public String getTag() {
-        return this.tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public Integer getMemoryLimit() {

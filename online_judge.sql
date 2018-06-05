@@ -83,7 +83,6 @@ CREATE TABLE `problem`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `title` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '题目标题',
   `description_id` int(10) NOT NULL COMMENT '题目描述id',
-  `tag` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '题目标签',
   `time_limit` int(10) NOT NULL DEFAULT 1000 COMMENT '题目时间限制（单位：ms）',
   `memory_limit` int(10) NOT NULL DEFAULT 32768 COMMENT '题目空间限制（单位：KB）',
   `public_status` tinyint(3) NOT NULL DEFAULT 1 COMMENT '公开状态（0：私密，1：公开）',

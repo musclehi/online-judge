@@ -6,6 +6,7 @@ import cn.idealismxxm.onlinejudge.dao.TestCaseDao;
 import cn.idealismxxm.onlinejudge.domain.entity.Description;
 import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.TestCase;
+import cn.idealismxxm.onlinejudge.domain.enums.DeletedStatusEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.OnlineJudgeEnum;
 import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
@@ -13,8 +14,8 @@ import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.domain.util.Pagination;
 import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
+import cn.idealismxxm.onlinejudge.service.ProblemTagService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,9 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Resource
     private TestCaseDao testCaseDao;
+
+    @Resource
+    private ProblemTagService problemTagService;
 
     @Override
     public Problem getProblemById(Integer problemId) {
@@ -148,13 +152,25 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public Pagination<Problem> pageProblemByQueryParam(QueryParam queryParam) {
         // 1. 参数校验
-        if(queryParam == null) {
+        if (queryParam == null) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
 
         // 2. 设置查询条件的map
         Map<String, Object> queryMap = new HashMap<>(16);
         queryMap.putAll(queryParam.getParam());
+
+        // 处理 选择标签的情况
+        if (queryMap.get("tagId") != null) {
+            if (queryMap.get("tagId") instanceof Integer) {
+                Integer tagId = (Integer) queryMap.get("tagId");
+                List<Integer> ids = problemTagService.listProblemIdByTagIdAndDeletedStatus(tagId, DeletedStatusEnum.VALID.getCode());
+                if(CollectionUtils.isNotEmpty(ids)) {
+                    queryMap.put("ids", ids);
+                }
+            }
+            queryMap.remove("tagId");
+        }
 
         // 3. 获取数据总数，并设置相关的分页信息
         Pagination<Problem> problemPagination = new Pagination<>();
@@ -190,7 +206,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public List<Problem> listProblemByIds(List<Integer> ids) {
-        if(CollectionUtils.isEmpty(ids)) {
+        if (CollectionUtils.isEmpty(ids)) {
             return new ArrayList<>(0);
         }
 

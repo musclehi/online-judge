@@ -90,4 +90,17 @@ public class TagController {
         Pagination<Tag> result = tagService.pageTagByQueryParam(queryParam);
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), result);
     }
+
+    /**
+     * 获取标签
+     *
+     * @param tagId 标签 主键
+     * @return 标签的id
+     */
+    @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_TAG})
+    @ResponseBody
+    @RequestMapping(value = "getTag", method = {RequestMethod.GET})
+    public AjaxResult<Tag> getTag(Integer tagId) {
+        return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), tagService.getTagById(tagId));
+    }
 }

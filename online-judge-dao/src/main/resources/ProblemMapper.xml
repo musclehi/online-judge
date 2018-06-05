@@ -8,7 +8,6 @@
         <result column="time_limit" jdbcType="INTEGER" property="timeLimit"/>
         <result column="description_id" jdbcType="INTEGER" property="descriptionId"/>
         <result column="public_status" jdbcType="TINYINT" property="publicStatus"/>
-        <result column="tag" jdbcType="VARCHAR" property="tag"/>
         <result column="memory_limit" jdbcType="INTEGER" property="memoryLimit"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="original_oj" jdbcType="SMALLINT" property="originalOj"/>
@@ -23,7 +22,6 @@
         ,problem.time_limit as time_limit
         ,problem.description_id as description_id
         ,problem.public_status as public_status
-        ,problem.tag as tag
         ,problem.memory_limit as memory_limit
         ,problem.title as title
         ,problem.original_oj as original_oj
@@ -54,7 +52,6 @@
             <if test="originalOj != null ">and problem.original_oj = #{originalOj,jdbcType=SMALLINT}</if>
             <if test="title != null ">and problem.title = #{title,jdbcType=VARCHAR}</if>
             <if test="memoryLimit != null ">and problem.memory_limit = #{memoryLimit,jdbcType=INTEGER}</if>
-            <if test="tag != null ">and problem.tag = #{tag,jdbcType=VARCHAR}</if>
             <if test="publicStatus != null ">and problem.public_status = #{publicStatus,jdbcType=TINYINT}</if>
             <if test="descriptionId != null ">and problem.description_id = #{descriptionId,jdbcType=INTEGER}</if>
             <if test="timeLimit != null ">and problem.time_limit = #{timeLimit,jdbcType=INTEGER}</if>
@@ -74,8 +71,8 @@
     <!-- 将Problem插入到对应数据库的表中,包括属性值为null的数据-->
 
     <insert id="insertProblem" useGeneratedKeys="true" keyProperty="id" parameterType="cn.idealismxxm.onlinejudge.domain.entity.Problem">
-        insert into problem(id,updated_time,time_limit,description_id,public_status,tag,memory_limit,title,original_oj,original_id,url)
-        values(#{id,jdbcType=INTEGER},now(),#{timeLimit,jdbcType=INTEGER},#{descriptionId,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{tag,jdbcType=VARCHAR},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
+        insert into problem(id,updated_time,time_limit,description_id,public_status,memory_limit,title,original_oj,original_id,url)
+        values(#{id,jdbcType=INTEGER},now(),#{timeLimit,jdbcType=INTEGER},#{descriptionId,jdbcType=INTEGER},#{publicStatus,jdbcType=TINYINT},#{memoryLimit,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{originalOj,jdbcType=SMALLINT},#{originalId,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR})
     </insert>
 
     <!-- 将Problem中属性值不为null的数据,插入到对应数据库的表中-->
@@ -87,7 +84,6 @@
             <if test="timeLimit != null">time_limit,</if>
             <if test="descriptionId != null">description_id,</if>
             <if test="publicStatus != null">public_status,</if>
-            <if test="tag != null">tag,</if>
             <if test="memoryLimit != null">memory_limit,</if>
             <if test="title != null">title,</if>
             <if test="originalOj != null">original_oj,</if>
@@ -100,7 +96,6 @@
             <if test="timeLimit != null">#{timeLimit,jdbcType=INTEGER},</if>
             <if test="descriptionId != null">#{descriptionId,jdbcType=INTEGER},</if>
             <if test="publicStatus != null">#{publicStatus,jdbcType=TINYINT},</if>
-            <if test="tag != null">#{tag,jdbcType=VARCHAR},</if>
             <if test="memoryLimit != null">#{memoryLimit,jdbcType=INTEGER},</if>
             <if test="title != null">#{title,jdbcType=VARCHAR},</if>
             <if test="originalOj != null">#{originalOj,jdbcType=SMALLINT},</if>
@@ -112,10 +107,10 @@
     <!-- 将Problem批量插入到对应数据库的表中-->
     <insert id="insertProblemByBatch" parameterType="ArrayList">
         insert into
-        problem(id,updated_time,time_limit,description_id,public_status,tag,memory_limit,title,original_oj,original_id,url)
+        problem(id,updated_time,time_limit,description_id,public_status,memory_limit,title,original_oj,original_id,url)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=TIMESTAMP},#{item.timeLimit,jdbcType=INTEGER},#{item.descriptionId,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.tag,jdbcType=VARCHAR},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.originalOj,jdbcType=SMALLINT},#{item.originalId,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR})
+            (#{item.id,jdbcType=INTEGER},#{item.updatedTime,jdbcType=TIMESTAMP},#{item.timeLimit,jdbcType=INTEGER},#{item.descriptionId,jdbcType=INTEGER},#{item.publicStatus,jdbcType=TINYINT},#{item.memoryLimit,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.originalOj,jdbcType=SMALLINT},#{item.originalId,jdbcType=VARCHAR},#{item.url,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -132,7 +127,6 @@
         ,time_limit=#{timeLimit,jdbcType=INTEGER}
         ,description_id=#{descriptionId,jdbcType=INTEGER}
         ,public_status=#{publicStatus,jdbcType=TINYINT}
-        ,tag=#{tag,jdbcType=VARCHAR}
         ,memory_limit=#{memoryLimit,jdbcType=INTEGER}
         ,title=#{title,jdbcType=VARCHAR}
         ,original_oj=#{originalOj,jdbcType=SMALLINT}
@@ -156,9 +150,6 @@
             </if>
             <if test="publicStatus != null">
                 public_status=#{publicStatus,jdbcType=TINYINT},
-            </if>
-            <if test="tag != null">
-                tag=#{tag,jdbcType=VARCHAR},
             </if>
             <if test="memoryLimit != null">
                 memory_limit=#{memoryLimit,jdbcType=INTEGER},
@@ -185,6 +176,10 @@
         FROM problem
         <where>
             <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+            <if test="ids != null ">
+                AND id IN
+                <foreach collection="ids" index="index" item="id" open="(" separator="," close=")"> #{id, jdbcType=INTEGER} </foreach>
+            </if>
         </where>
     </select>
 
@@ -195,6 +190,10 @@
         FROM problem
         <where>
             <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+            <if test="ids != null ">
+                AND id IN
+                <foreach collection="ids" index="index" item="id" open="(" separator="," close=")"> #{id, jdbcType=INTEGER} </foreach>
+            </if>
         </where>
         <if test="limit != null">
             <if test="offset != null">
