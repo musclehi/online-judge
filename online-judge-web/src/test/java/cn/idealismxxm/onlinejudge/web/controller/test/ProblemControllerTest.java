@@ -163,7 +163,6 @@ public class ProblemControllerTest {
         problem.setTitle("题目标题");
         problem.setTimeLimit(2000);
         problem.setMemoryLimit(65535);
-        problem.setTag("");
         problem.setUrl(OnlineJudgeEnum.THIS.getUrl(""));
 
         return problem;
