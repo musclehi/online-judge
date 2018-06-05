@@ -143,7 +143,7 @@ public class ProblemController {
      */
     @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_PROBLEM})
     @ResponseBody
-    @RequestMapping(value = "listTagByProblemId", method = {RequestMethod.POST})
+    @RequestMapping(value = "listTagByProblemId", method = {RequestMethod.GET})
     public AjaxResult<List<Tag>> listTagByProblemId(Integer problemId) {
         List<Tag> tags = problemTagService.listTagByProblemIdAndDeletedStatus(problemId, DeletedStatusEnum.VALID.getCode());
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), tags);

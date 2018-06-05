@@ -53,7 +53,7 @@ public interface ProblemService {
     Pagination<Problem> pageProblemByQueryParam(QueryParam queryParam);
 
     /**
-     * 获取 主键 在 ids 列表中的题目列表
+     * 获取 主键 在 ids 列表中的题目id列表
      *
      * @param ids id列表
      * @return 题目列表

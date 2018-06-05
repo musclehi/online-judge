@@ -99,8 +99,8 @@ public class TagController {
      */
     @RequirePrivilege(privilegeEnum = {PrivilegeEnum.SIGN_IN, PrivilegeEnum.MANAGE_TAG})
     @ResponseBody
-    @RequestMapping(value = "addTag", method = {RequestMethod.POST})
-    public AjaxResult<Tag> addTag(Integer tagId) {
+    @RequestMapping(value = "getTag", method = {RequestMethod.GET})
+    public AjaxResult<Tag> getTag(Integer tagId) {
         return new AjaxResult<>(ErrorCodeEnum.SUCCESS.getMsg(), tagService.getTagById(tagId));
     }
 }

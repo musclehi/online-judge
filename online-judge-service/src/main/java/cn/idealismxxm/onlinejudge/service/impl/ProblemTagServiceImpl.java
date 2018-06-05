@@ -204,4 +204,20 @@ public class ProblemTagServiceImpl implements ProblemTagService {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
     }
+
+    @Override
+    public List<Integer> listProblemIdByTagIdAndDeletedStatus(Integer tagId, Integer deletedStatus) {
+        if(tagId == null || tagId <= 0) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+        if(deletedStatus != null && DeletedStatusEnum.getDeletedStatusEnumByCode(deletedStatus) == null) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        try {
+            return problemTagDao.listProblemIdByTagIdAndDeletedStatus(tagId, deletedStatus);
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
+        }
+    }
 }

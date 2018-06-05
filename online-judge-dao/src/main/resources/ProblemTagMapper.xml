@@ -138,13 +138,23 @@
             AND tag_id = #{tagId, jdbcType=INTEGER}
     </select>
 
-    <!-- 列出 题目id 下 删除状态 为 deleteStatus 的所有标签 -->
+    <!-- 列出 题目id 下 删除状态 为 deleteStatus 的所有标签id -->
     <select id="listTagIdByProblemIdAndDeletedStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         SELECT tag_id
         FROM problem_tag
         WHERE problem_id = #{problemId, jdbcType=INTEGER}
             <if test="deletedStatus != null">
-                AND deleted_status = #{deletedStatus,jdbcType=TINYINT},
+                AND deleted_status = #{deletedStatus,jdbcType=TINYINT}
             </if>
+    </select>
+
+    <!-- 获取 拥有 tagId  的标签，且关系为 DeletedStatus 的题目id列表 -->
+    <select id="listProblemIdByTagIdAndDeletedStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT problem_id
+        FROM problem_tag
+        WHERE tag_id = #{tagId, jdbcType=INTEGER}
+        <if test="deletedStatus != null">
+            AND deleted_status = #{deletedStatus,jdbcType=TINYINT}
+        </if>
     </select>
 </mapper>

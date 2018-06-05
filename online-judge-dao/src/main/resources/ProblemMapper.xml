@@ -176,6 +176,10 @@
         FROM problem
         <where>
             <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+            <if test="ids != null ">
+                AND id IN
+                <foreach collection="ids" index="index" item="id" open="(" separator="," close=")"> #{id, jdbcType=INTEGER} </foreach>
+            </if>
         </where>
     </select>
 
@@ -186,6 +190,10 @@
         FROM problem
         <where>
             <if test="title != null ">AND title LIKE "%"#{title,jdbcType=VARCHAR}"%"</if>
+            <if test="ids != null ">
+                AND id IN
+                <foreach collection="ids" index="index" item="id" open="(" separator="," close=")"> #{id, jdbcType=INTEGER} </foreach>
+            </if>
         </where>
         <if test="limit != null">
             <if test="offset != null">
