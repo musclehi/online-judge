@@ -2,6 +2,8 @@ package cn.idealismxxm.onlinejudge.service;
 
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 
+import java.util.List;
+
 /**
  * 比赛提交记录相关操作接口
  *
@@ -19,4 +21,12 @@ public interface ContestSubmissionService {
      * @return 提交记录的id
      */
     Integer submit(Integer contestId, Submission submission, String username);
+
+    /**
+     * 根据比赛id获取相关提交记录id列表
+     *
+     * @param contestId 比赛id
+     * @return 提交记录id列表
+     */
+    List<Integer> listSubmissionIdByContestId(Integer contestId);
 }

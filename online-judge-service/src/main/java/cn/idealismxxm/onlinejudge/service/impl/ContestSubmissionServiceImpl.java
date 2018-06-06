@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 比赛提交记录相关操作接口实现
@@ -54,5 +55,18 @@ public class ContestSubmissionServiceImpl implements ContestSubmissionService {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
         }
         return submissionId;
+    }
+
+    @Override
+    public List<Integer> listSubmissionIdByContestId(Integer contestId) {
+        if (contestId == null || contestId <= 0) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+        }
+
+        try {
+            return contestSubmissionDao.listSubmissionIdByContestId(contestId);
+        } catch (Exception e) {
+            throw BusinessException.buildBusinessException(ErrorCodeEnum.DAO_CALL_ERROR, e);
+        }
     }
 }
