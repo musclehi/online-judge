@@ -13,22 +13,22 @@ public class Pagination<T> implements Serializable {
     /**
      * 页号
      */
-    private Integer pageNum;
+    private Integer pageNum = 0;
 
     /**
      * 页大小
      */
-    private Integer pageSize;
+    private Integer pageSize = 0;
 
     /**
      * 数据总数
      */
-    private Integer totalCount;
+    private Integer totalCount = 0;
 
     /**
      * 页总数
      */
-    private Integer totalPage;
+    private Integer totalPage = 0;
 
     /**
      * 数据

@@ -113,4 +113,10 @@
         where id=#{id,jdbcType=INTEGER}
     </update>
 
+    <!-- 根据比赛id获取相关提交记录id列表 -->
+    <select id="listSubmissionIdByContestId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT submission_id
+        FROM contest_submission
+        WHERE contest_id = #{contestId, jdbcType=INTEGER}
+    </select>
 </mapper>

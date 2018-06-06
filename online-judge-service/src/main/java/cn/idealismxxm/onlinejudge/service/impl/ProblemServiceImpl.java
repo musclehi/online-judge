@@ -165,9 +165,13 @@ public class ProblemServiceImpl implements ProblemService {
             if (queryMap.get("tagId") instanceof Integer) {
                 Integer tagId = (Integer) queryMap.get("tagId");
                 List<Integer> ids = problemTagService.listProblemIdByTagIdAndDeletedStatus(tagId, DeletedStatusEnum.VALID.getCode());
-                if(CollectionUtils.isNotEmpty(ids)) {
-                    queryMap.put("ids", ids);
+                // 如果为空，则直接返回空分页列表
+                if (CollectionUtils.isEmpty(ids)) {
+                    return new Pagination<>();
                 }
+                queryMap.put("ids", ids);
+            } else {
+                throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
             }
             queryMap.remove("tagId");
         }

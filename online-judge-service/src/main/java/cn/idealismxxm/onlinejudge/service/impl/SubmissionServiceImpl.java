@@ -1,7 +1,6 @@
 package cn.idealismxxm.onlinejudge.service.impl;
 
 import cn.idealismxxm.onlinejudge.dao.SubmissionDao;
-import cn.idealismxxm.onlinejudge.domain.entity.Problem;
 import cn.idealismxxm.onlinejudge.domain.entity.Submission;
 import cn.idealismxxm.onlinejudge.domain.enums.ActiveMQQueueEnum;
 import cn.idealismxxm.onlinejudge.domain.enums.ErrorCodeEnum;
@@ -11,9 +10,11 @@ import cn.idealismxxm.onlinejudge.domain.exception.BusinessException;
 import cn.idealismxxm.onlinejudge.domain.util.JsonUtil;
 import cn.idealismxxm.onlinejudge.domain.util.Pagination;
 import cn.idealismxxm.onlinejudge.domain.util.QueryParam;
+import cn.idealismxxm.onlinejudge.service.ContestSubmissionService;
 import cn.idealismxxm.onlinejudge.service.ProblemService;
 import cn.idealismxxm.onlinejudge.service.SubmissionService;
 import cn.idealismxxm.onlinejudge.service.jms.producer.MessageProducer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +41,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Resource
     private ProblemService problemService;
+
+    @Resource
+    private ContestSubmissionService contestSubmissionService;
 
     @Resource
     private MessageProducer messageProducer;
@@ -111,7 +116,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Boolean modifySubmission(Submission submission) {
         int updatedRow;
-        try{
+        try {
             updatedRow = submissionDao.updateNonEmptySubmissionById(submission);
         } catch (Exception e) {
             LOGGER.error("#modifySubmission error, submission: {}", JsonUtil.objectToJson(submission), e);
@@ -123,16 +128,33 @@ public class SubmissionServiceImpl implements SubmissionService {
         return true;
     }
 
+    // TODO page类型的方法可以用联合查询
     @Override
     public Pagination<Submission> pageSubmissionByQueryParam(QueryParam queryParam) {
         // 1. 参数校验
-        if(queryParam == null) {
+        if (queryParam == null) {
             throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
         }
 
         // 2. 设置查询条件的map
         Map<String, Object> queryMap = new HashMap<>(16);
         queryMap.putAll(queryParam.getParam());
+
+        // 处理 指定 submission 的主键列表的情况
+        if (queryMap.get("contestId") != null) {
+            if (queryMap.get("contestId") instanceof Integer) {
+                Integer contestId = (Integer) queryMap.get("contestId");
+                List<Integer> ids = contestSubmissionService.listSubmissionIdByContestId(contestId);
+                // 如果为空，则直接返回空分页列表
+                if (CollectionUtils.isEmpty(ids)) {
+                    return new Pagination<>();
+                }
+                queryMap.put("ids", ids);
+            } else {
+                throw BusinessException.buildBusinessException(ErrorCodeEnum.ILLEGAL_ARGUMENT);
+            }
+            queryMap.remove("contestId");
+        }
 
         // 3. 获取数据总数，并设置相关的分页信息
         Pagination<Submission> submissionPagination = new Pagination<>();

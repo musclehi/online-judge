@@ -60,4 +60,12 @@ public interface ContestSubmissionDao{
 	 * @return
 	 */
     int updateNonEmptyContestSubmissionById(ContestSubmission enti);
+
+	/**
+	 * 根据比赛id获取相关提交记录id列表
+	 *
+	 * @param contestId 比赛id
+	 * @return 提交记录id列表
+	 */
+    List<Integer> listSubmissionIdByContestId(Integer contestId);
 }
